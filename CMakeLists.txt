@@ -1,3 +1,4 @@
+message(STATUS "Reading top level CMakeLists.txt file.")
 cmake_minimum_required(VERSION 3.13)
 
 if(NOT PROJECT_NAME)
@@ -6,6 +7,8 @@ if(NOT PROJECT_NAME)
             DESCRIPTION "Simulation laboratory for stock evaluation and prediction"
             LANGUAGES C CXX)
 endif()
+
+message(STATUS "MYVAR1 ${MY_USER_VAR1}!!------------")
 
 message(STATUS "Loading CMake modules")
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules ${CMAKE_CURRENT_SOURCE_DIR}/libd/CMakeModules)

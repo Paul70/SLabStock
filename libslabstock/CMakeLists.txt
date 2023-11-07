@@ -1,3 +1,5 @@
+find_package(ZLIB REQUIRED)
+
 set(slabstock_HEADERS
     simulation/callback.h
     simulation/dummyprocess.h
@@ -5,7 +7,6 @@ set(slabstock_HEADERS
     simulation/process.h
     simulation/simulation.h
     simulation/simulationbase.h
-    thirdparty/semver/include/semver.hpp
     utility/basictypes.h
 )
 set(slabstock_SOURCES
@@ -25,4 +26,6 @@ target_sources(slabstock PRIVATE
 target_include_directories(slabstock PRIVATE .. .)
 target_link_libraries(slabstock PUBLIC
     dutil
+    ZLIB::ZLIB
 )
+

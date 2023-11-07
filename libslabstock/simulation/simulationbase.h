@@ -44,7 +44,7 @@ public:
 
     // get event das ist ein template
 
-    als naechstes muss ich in libdutil in den Settings eine buildSubobject list anlegen, damit ich events in die cd packen kann
+    //als naechstes muss ich in libdutil in den Settings eine buildSubobject list anlegen, damit ich events in die cd packen kann
 
         private : Id id_;
     EventMap eventMap_;

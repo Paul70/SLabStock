@@ -1,1 +1,6 @@
-*.txt.user
+# ignored folders
+/build
+
+# ignred files
+CMakeUserPreset.json
+CMakeLists.txt.user
