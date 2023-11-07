@@ -2,5 +2,5 @@
 /build
 
 # ignred files
-CMakeUserPreset.json
+CMakeUserPresets.json
 CMakeLists.txt.user
