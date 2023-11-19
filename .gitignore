@@ -1,6 +1,8 @@
 # ignored folders
 /build
+/.vscode
 
-# ignred files
+# ignored files
 CMakeUserPresets.json
 CMakeLists.txt.user
+ProjectUserConfig.json

@@ -9,36 +9,37 @@ class SLabsStockRecipe(ConanFile):
     author = "Paul Heidenreich"
     description = "SLabStock conan recipe file"
     version = "0.0.1"
-
-    # Binary configuration
-    settings = "os", "compiler", "build_type", "arch"                           
-
-    # Do not copy the sources to the package's build dirs (False setting is only
-    # necessary for builds, which pollute the source dir).
-    no_copy_source = True
+    settings = "os", "compiler", "build_type", "arch"
+    no_copy_source = True 
+    options = {
+        "default_config": [True, False],
+        "project_config_id": ["ANY"],
+        "cmake": [True, False],
+    } 
+    default_options = {
+        "default_config": False,
+        "project_config_id": 0,
+        "cmake": True,
+    }                     
+    
 
     def requirements(self):
         self.requires("zlib/1.2.11")
         self.requires("neargye-semver/0.3.0")
 
     def build_requirements(self):
-        self.tool_requires("cmake/3.26.3")
+        self.tool_requires("cmake/3.27.7")
 
     # Configuration of your project's home repository layout
     def layout(self):
         cmake_layout(self)
     
 
-    def generate(self):
+    def generate(self):        
         deps = CMakeDeps(self)
         deps.generate()
 
-        # Configuration of cmake toolchain file (conan_toolchain.cmake)
-        # toolchain file defines the CMakePresets.json content
         tc = CMakeToolchain(self, generator="Ninja")
-        # if exists cmake user preset set false otherwise set  to true
-        tc.user_presets_path = False 
-        tc.cache_variables["foo"] = True 
         tc.generate()
 
     def build(self):
@@ -57,20 +58,6 @@ class SLabsStockRecipe(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
-
-
-
-    
-    #def build(self):
-    #    cmake = self._configure_cmake()
-    #    cmake.build()
-
-    #def package(self):
-    #    cmake = self._configure_cmake()
-
-        # Do not use self.copy, but use CMake's install mechanism, which is not conan
-        # specific and can be re-used in other contexts
-        # https://docs.conan.io/en/latest/howtos/cmake_install.html#how-to-reuse-cmake-install-for-package-method
-        #cmake.install()  
+  
 
 
