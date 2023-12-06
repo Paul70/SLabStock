@@ -1,3 +1,6 @@
 [submodule "libd"]
 	path = libd
 	url = git@github.com:Paul70/libd.git
+[submodule "devops"]
+	path = devops
+	url = git@github.com:Paul70/devops.git

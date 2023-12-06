@@ -1,6 +1,8 @@
 message(STATUS "Reading top level CMakeLists.txt file.")
 cmake_minimum_required(VERSION 3.13)
 
+message(STATUS "Building with CMake version: ${CMAKE_VERSION}")
+
 if(NOT PROJECT_NAME)
     project(SLabStock
             VERSION 0.1.0
