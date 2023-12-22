@@ -26,6 +26,14 @@ class SLabStockDevopsRecipe():
         "ubuntu_22_04"
     ]
 
+    options = {
+        "settings_profile": ["ANY"] 
+    } 
+
+    default_options = {
+        "settings_profile": "default"
+    }
+
     def checkOS(self):
         # hole mir operating system settings
         # check if we have a recipe
