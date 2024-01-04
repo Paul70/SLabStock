@@ -1,52 +1,82 @@
 #! /usr/bin/python3
-
+import sys
 import subprocess
 
-###############################################################################################
-#
-# devopsfile.py - Managing project system settings for your whole host machine
-#
-# devopsfile.py is similar to conanfile.py, however it does not manage a single porject's
-# dependencies and packaging, instead it maintains porject system settings like compiler toolchain
-# and other build tools.
-# It is designed to work well together with conan.
-#
-# handling all system settings to build this project for every 
-# operating system defined in this list or maybe even define containers here to 
-# deal with this project.
-#
-###############################################################################################
 
-class SLabStockDevopsRecipe():
+class SLabStockDevOpsRecipe():
+
+    # DevOps setup main data
     name = "slabstock-devops"
     version = "0.1.0"
-    author = "Paul Heidenreich"
-
-    os_list = [
-        "ubuntu_22_04"
-    ]
-
+    git_tag = "xyz"
     options = {
-        "settings_profile": ["ANY"] 
-    } 
-
+        "slabstock-profile":[None,
+                            "default-debug-config.json",
+                            "default-release-config.json", 
+                            "gcc-131-debug-config.json",
+                            "gcc-131-release-config.json"],
+        "os": [None, "Ubuntu", "Windows"],
+        "ide": [None, "qtcreator"]
+    }
     default_options = {
-        "settings_profile": "default"
+        "slabstock-profile": "default-debug-config.json",
+        "os": "Ubuntu",
+        "ide": "qtcreator"
     }
 
-    def checkOS(self):
-        # hole mir operating system settings
-        # check if we have a recipe
+    # DevOps setup metadata
+    author = "Paul Heidenreich"
+    decription = "Settings configuration toolchain recipe file."
+
+    def configure(self):
+        self.options["devops-profile"] = ["gcc-131-debug-config.json"]
+        self.options["os"] = ["Ubuntu"]
+        self.options["ide"] = ["qtcreator"]
         pass
 
+
+    # Check if the specified devops profile fits for this host operating system.
+    def checkProfile(self):
+        if self.options["devops-profile"]:
+            #return Settings.check(self.name, self.options["devops-profile"], self.os_list)
+            return False
+        else:
+            return True
+            #return Settings.check(self.name, self.default_options["devops-profile"], self.os_list)
+        pass
+
+    # Generate configurations for porject
     def generate(self):
+
+        self.configure()
+
+        if len(self.options["devops-profile"]) > 1:
+            self.options["devops-profile"] = self.default_options["devops-profile"]
+
+        script = [
+            "./devops/command.py --bootstrap --name "+ self.name + " --profile " + self.options["devops-profile"][0]
+        ]
+        print(script[0])
+        for cmd in script:
+            subprocess.run([cmd], shell = True, capture_output = False, text = False)
         pass
 
+    def build(self):
+        print("This will be the build method call ...")
+        print("Calling conan create command will happen here ...")
 
-    subprocess.run(["python3 ./devops/run-build.py --help"], shell = True, capture_output = False, text = False)
+
+###################################################################################################
+dev = SLabStockDevOpsRecipe()
+def generate():
+    dev.generate()
+def build():
+    dev.build()
 
 
-###############################################################################################
-#
-# devops
-###############################################################################################
+# args[0]  = current file
+# args[1]  = function name
+# args[2:] = function args : (*unpacked)
+if __name__ == "__main__":
+    args = sys.argv
+    globals()[args[1]](*args[2:])

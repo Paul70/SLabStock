@@ -1,38 +1,38 @@
-message(STATUS "Reading top level CMakeLists.txt file.")
-cmake_minimum_required(VERSION 3.13)
+message(STATUS "SLabStock CMakeLists.txt: configuring top level directory")
+message(STATUS "Cmake version ${CMAKE_VERSION}")
 
-message(STATUS "Building with CMake version: ${CMAKE_VERSION}")
+cmake_minimum_required(VERSION 3.13)
 
 if(NOT PROJECT_NAME)
     project(SLabStock
             VERSION 0.1.0
             DESCRIPTION "Simulation laboratory for stock evaluation and prediction"
-            LANGUAGES C CXX)
+            LANGUAGES C CXX
+    )
 endif()
 
-message(STATUS "MYVAR1 ${MY_USER_VAR1}!!------------")
+message(STATUS "SLabStock CMakeLists.txt: loading CMake modules from: ${CMAKE_SOURCE_DIR}/CMakeModules")
+list(APPEND CMAKE_MODULE_PATH
+    ${CMAKE_SOURCE_DIR}/CMakeModules
+    ${CMAKE_SOURCE_DIR}/libd/CMakeModules)
+include(SLabStockVariables)
+include(SLabStockDefaultConfig)
+include(SLabStockConfigureBuildPaths)
 
-message(STATUS "Loading CMake modules")
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules ${CMAKE_CURRENT_SOURCE_DIR}/libd/CMakeModules)
-include(HelperFunctions)
-include(LibdDefaultConfig)
-include(ConfigureBuildPaths)
+###########################################################
+# Manually include libd cmake modules
+# Intermediate solution until there is a libd conan package
+# aktuell werden die ganzen settings von libd verwendet, das muss dann auch noch umgestellt werden.
+message(STATUS "SLabStock CMakeLists.txt: loading CMake modules from: ${CMAKE_SOURCE_DIR}/libd/CMakeModules")
+include(${CMAKE_SOURCE_DIR}/libd/CMakeModules/HelperFunctions.cmake)
+include(${CMAKE_SOURCE_DIR}/libd/CMakeModules/LibdDefaultConfig.cmake)
+include(${CMAKE_SOURCE_DIR}/libd/CMakeModules/ConfigureBuildPaths.cmake)
 
-# Global options for libd project. Have to be set before loading cmake modules.
-option(BUILD_SLABSTOCK_TESTS "Build SLabStock tests and use system installed GoogleTest framework" ON)
-option(BUILD_SLABSTOCK_TESTS_AND_GOOGLETEST "Build libd Googletest test suite and Googletest framework itsself" OFF)
-option(SLABSTOCK_USE_CTESTS "Use cmake's CTest framework to run all registered unit tests after a successfull build" OFF)
-option(USE_CXX_20 "Enable C++ 20 features. Option gets deactivated if the compiler does not support C++ 20." OFF)
-
-# Set libw build options, overwrites options in libw sub-project.
+message(STATUS "SLabStock CMakeLists.txt: configuring subdirectory ${S_LIBD}")
 add_subdirectory(libd)
-
-# Internal options depending on LibdDefaultConfig module
-option(BUILD_SHARED_LIBS "Build all libraries as shared libs unless it is defined ohterwise" ${D_DEFAULT_BUILD_SHARED_LIBS})
-
 add_subdirectory(libslabstock)
 
-if(BUILD_SLABSTOCK_TESTS)
-    set(BUILD_LIBD_TESTS_AND_GOOGLETEST OFF)
+if(O_BUILD_SLABSTOCK_TESTS)
+    message(STATUS "SLabStock CMakeLists.txt: configuring subdirectory ${S_TESTS}")
     add_subdirectory(tests)
 endif()
