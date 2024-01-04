@@ -1,3 +1,5 @@
+message(STATUS "libslabstock CMakeLists.txt: configuring subdirectory ${S_LIB_SLABSTOCK}")
+
 find_package(ZLIB REQUIRED)
 
 set(slabstock_HEADERS
