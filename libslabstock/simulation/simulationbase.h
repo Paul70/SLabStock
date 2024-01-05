@@ -1,10 +1,13 @@
 #ifndef DUTIL_SIMULATIONBASE_H
 #define DUTIL_SIMULATIONBASE_H
 #include "event.h"
-#include "libd/libdutil/namedreference.h"
-#include "libd/libdutil/projectware.h"
 #include "utility/basictypes.h"
 
+#include "libd/libdutil/namedreference.h"
+#include "libd/libdutil/now.h"
+#include "libd/libdutil/projectware.h"
+
+#include <list>
 #include <map>
 #include <tuple>
 
@@ -38,11 +41,19 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
    */
   using Queue = std::multimap<QueueKey, Event::Id>;
 
-  //! Define a simulation id to identify the a concrete simulation object.
+  //! Define a simulation id to identify a concrete simulation object later.
   D_NAMED_STRING(Id);
 
   //! Set of simulation events.
   D_NAMED_REFERENCE(EventList, Event)
+
+  //! Check if choosen Id is not already used.
+  /*! \brief Check if choosen Id is already used.
+   *
+   * Returns true if Id is ok, ohterwise, if Id is already in use
+   * returns false.
+   */
+  static bool ckeckId(SimulationBase::Id const newId);
 
   //! Return construction requirements.
   static const DUTIL::ConstructionValidator getConstructionValidator();
@@ -51,19 +62,38 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   explicit SimulationBase(DUTIL::ConstructionData const& cd,
                           DUTIL::LoggingSource::LoggingSinkPointer sink = nullptr);
 
-  template <typename ConcreteEvent>
-  Event::Id createEvent(DUTIL::ConstructionData const& /*cd*/)
-  {
-    // hier muss ich ein event dynamisch bauen
-  }
+  //! Retrun simualtion Id.
+  SimulationBase::Id getId() const;
 
-  // get event das ist ein template
+  void schedule();
+
+  //! Generate an event Id not in use.
+  Event::Id getUnusedEventId() const;
+
+  Event::Id createEvent(DUTIL::ConstructionData cd);
+
+  // next steps:
+  // wichtige function for simulation machen
+  // erstes Beispiel zum Laufen bekommen
+  // initialize und finalize implementieren
+  // process weiter implementieren
+
+  // wie mache ich weiter:
+  // queue jetzt bauen, also schedule machen und dann
+  // über die events steppen
+
+  // danach das erste Beispiel bauen
+
+  protected:
+  Event::Id step();
 
   private:
   Id id_;
   EventMap eventMap_;
   Queue eventQueue_;
-  TimeTick now_;
+  DUTIL::Now now_;
+
+  static std::list<std::string> simulations;
 };
 }  // namespace SLABSTOCK
 

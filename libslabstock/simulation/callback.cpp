@@ -3,5 +3,4 @@
 using namespace DUTIL;
 using namespace SLABSTOCK;
 
-Callback::Callback([[maybe_unused]] ConstructionData const & cd)
-{}
+D_DEFINE_FACTORYINTERFACE(::SLABSTOCK::Callback)
