@@ -1,21 +1,26 @@
 #include "simulation.h"
 
-#include "libd/libdutil/constructionvalidator.h"
+//#include "libd/libdutil/constructionvalidator.h"
 
 using namespace DUTIL;
-using namespace SLABSTOCK;
 
-D_DEFINE_SIMULATION(Simulation)
+namespace SLABSTOCK {
 
-DUTIL::ConstructionValidator const& Simulation::getConstructionValidator()
-{
-  static ConstructionValidator cv;
-  return cv;
-}
+D_DEFINE_SIMULATIONBASE(Simulation)
 
-Simulation::Simulation(DUTIL::ConstructionData const& cd,
-                       DUTIL::LoggingSource::LoggingSinkPointer sink) :
+Simulation::Simulation(ConstructionData const& cd, LoggingSource::LoggingSinkPointer sink) :
     SimulationBase(cd, sink)
 {
-  this->trace("Default construction of '" + this->getShortConcreteClassName() + "'.");
+  this->trace("Finished construction of '" + this->getShortConcreteClassName()
+              + "' with ConstructionData.");
 }
+
+Simulation::Simulation(DUTIL::LoggingSource::LoggingSinkPointer sink) :
+    SimulationBase(ConstructionData{}, sink)
+{
+  this->trace("Finished construction of '" + this->getShortConcreteClassName()
+              + "' without ConstructionData.");
+}
+
+void Simulation::logEventListImpl() const {}
+}  // namespace SLABSTOCK

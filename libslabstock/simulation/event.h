@@ -44,26 +44,51 @@ class Event : public DUTIL::ProjectWare, public DUTIL::LoggingSource
 
   virtual ~Event() override;
 
+  //! Interface function to get the derived class name.
+  std::string whatAmI() const;
+
   //! Return the event id.
   Event::Id getId() const;
 
   //! Retrun the current event state.
   Event::State getState() const;
 
+  //! Return a copy of the current event values.
+  DUTIL::ConstructionData getValue() const;
+
+  /*! \brief Event state machine method.
+   *
+   * Asserts if method is calles and state is set to 'PROCESSED'.
+   */
+  Event::State advanceState();
+
+  void addCallback(DUTIL::ConstructionData const& callback_cd);
+
   private:
+  virtual std::string whatAmIImpl() const = 0;
+
   std::unique_ptr<DUTIL::ConstructionData> value_;
   std::vector<std::unique_ptr<Callback>> callbacks_;
 };
 
+namespace EventDetail {
+template <typename T>
+struct is_event : public std::conjunction<std::is_same<T, Event>, std::is_base_of<Event, T>>
+{};
+
+template <typename T>
+constexpr bool is_event_v = is_event<T>::value;
+}  // namespace EventDetail
+
 }  // namespace SLABSTOCK
 
-D_DECLARE_FACTORYINTERFACE(SLABSTOCK::Event)
+D_DECLARE_FACTORYINTERFACE(::SLABSTOCK::Event)
 
-#define D_DECLARE_Event(REGISTERED_CLASS)                                                     \
+#define D_DECLARE_EVENT(REGISTERED_CLASS)                                                     \
   static const DUTIL::ConcreteFactory<REGISTERED_CLASS, SLABSTOCK::Event, DUTIL::ProjectWare> \
       factory;
 
-#define D_DEFINE_Event(REGISTERED_CLASS)                                               \
+#define D_DEFINE_EVENT(REGISTERED_CLASS)                                               \
   const DUTIL::ConcreteFactory<REGISTERED_CLASS, SLABSTOCK::Event, DUTIL::ProjectWare> \
       REGISTERED_CLASS::factory;
 #endif  // SLABSTOCK_EVENT_H

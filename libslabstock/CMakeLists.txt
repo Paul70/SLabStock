@@ -11,6 +11,7 @@ set(slabstock_HEADERS
     simulation/processinitializecallback.h
     simulation/simulation.h
     simulation/simulationbase.h
+    simulation/timeout.h
     utility/basictypes.h
 )
 set(slabstock_SOURCES
@@ -22,6 +23,7 @@ set(slabstock_SOURCES
     simulation/processinitializecallback.cpp
     simulation/simulation.cpp
     simulation/simulationbase.cpp
+    simulation/timeout.cpp
 )
 
 add_library(slabstock)
@@ -29,8 +31,12 @@ target_sources(slabstock PRIVATE
     ${slabstock_HEADERS}
     ${slabstock_SOURCES}
 )
-target_include_directories(slabstock PRIVATE .. .)
+target_include_directories(slabstock PRIVATE
+    .
+    ..
+)
 target_link_libraries(slabstock PUBLIC
+    dglobals
     dutil
     ZLIB::ZLIB
 )

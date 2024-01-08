@@ -2,7 +2,9 @@
 #define SLABSTOCK_CALLBACK_H
 #include "libd/libdutil/projectware.h"
 
-namespace DUTIL {}
+namespace DUTIL {
+class ConstructionValidator;
+}
 
 namespace SLABSTOCK {
 
@@ -14,6 +16,8 @@ namespace SLABSTOCK {
 class Callback : public DUTIL::ProjectWare
 {
   public:
+  static DUTIL::ConstructionValidator const& getConstructinValidator();
+
   private:
 };
 

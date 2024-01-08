@@ -17,15 +17,17 @@ namespace SLABSTOCK {
 
 class DummyProcess : public Process, public D_NAMED_CLASS(::SLABSTOCK::DummyProcess)
 {
-public:
-    //! Declare static factory member.
-    D_DECLARE_PROCESS(DummyProcess)
+  public:
+  //! Declare static factory member.
+  D_DECLARE_PROCESS(DummyProcess)
 
-    //! Construct with construction data
-    using Process::Process;
+  //! Construct with construction data
+  using Process::Process;
 
-private:
+  private:
+  virtual std::string whatAmIImpl() const override;
+  virtual bool updateImpl(SimulationBase& sim, Event::Id& newTarget) override;
 };
 
-} // namespace SLABSTOCK
-#endif // SLABSTOCK_DUMMYPROCESS_H
+}  // namespace SLABSTOCK
+#endif  // SLABSTOCK_DUMMYPROCESS_H

@@ -33,6 +33,5 @@ add_subdirectory(libd)
 add_subdirectory(libslabstock)
 
 if(O_BUILD_SLABSTOCK_TESTS)
-    message(STATUS "SLabStock CMakeLists.txt: configuring subdirectory ${S_TESTS}")
     add_subdirectory(tests)
 endif()

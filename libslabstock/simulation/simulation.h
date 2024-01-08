@@ -1,17 +1,12 @@
 #ifndef SLABSTOCK_SIMULATION_H
 #define SLABSTOCK_SIMULATION_H
-#include "libd/libdutil/concretefactory.h"
-#include "libd/libdutil/namedclass.h"
 #include "simulationbase.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <zlib.h>
+#include "libd/libdutil/concretefactory.h"
+#include "libd/libdutil/namedclass.h"
 
 namespace DUTIL {
-class ConstructionValidator;
+//class ConstructionValidator;
 struct ConstructionData;
 }  // namespace DUTIL
 
@@ -25,16 +20,21 @@ namespace SLABSTOCK {
 class Simulation : public SimulationBase, public D_NAMED_CLASS(::SLABSTOCK::Simulation)
 {
   public:
-  static DUTIL::ConstructionValidator const& getConstructionValidator();
-
   //! Declare static factory member
-  D_DECLARE_SIMULATION(Simulation)
+  D_DECLARE_SIMULATIONBASE(Simulation)
 
-  //! Construct with construction data
+  //! Inherit ConstructionValidator.
+  using SimulationBase::getConstructionValidator;
+
+  //! Construct with construction data.
   explicit Simulation(DUTIL::ConstructionData const& cd,
                       DUTIL::LoggingSource::LoggingSinkPointer sink = nullptr);
 
+  //! Construct an emty simulation.
+  Simulation(DUTIL::LoggingSource::LoggingSinkPointer sink = nullptr);
+
   private:
+  virtual void logEventListImpl() const override;
 };
 
 }  // namespace SLABSTOCK

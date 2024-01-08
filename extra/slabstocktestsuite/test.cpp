@@ -1,4 +1,4 @@
-#include "libslabstock/%TestedClassName:l%.%CppHeaderSuffix%"
+#include "libslabstock/simulation/%TestedClassName:l%.%CppHeaderSuffix%"
 #include "tests/testbase.h"
 
 using namespace SLABSTOCK;
