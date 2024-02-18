@@ -16,7 +16,7 @@ namespace SLABSTOCK {
  * Longer description of ProcessInitializeCallback.
  */
 
-class ProcessInitializeCallback :
+class ProcessInitializeCallback final :
     public Callback,
     public D_NAMED_CLASS(::SLABSTOCK::ProcessInitializeCallback)
 {
@@ -28,6 +28,7 @@ class ProcessInitializeCallback :
   explicit ProcessInitializeCallback(DUTIL::ConstructionData const& cd);
 
   private:
+  virtual void callbackImpl(SimulationBase& sim, Event& event) const override;
 };
 
 }  // namespace SLABSTOCK

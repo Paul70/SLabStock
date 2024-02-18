@@ -14,3 +14,8 @@ bool DummyProcess::updateImpl(SimulationBase& /*sim*/, Event::Id& /*newTarget*/)
 {
   return true;
 }
+
+bool DummyProcess::finalizeImpl(SimulationBase&)
+{
+  return true;
+}

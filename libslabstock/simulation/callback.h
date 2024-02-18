@@ -7,6 +7,8 @@ class ConstructionValidator;
 }
 
 namespace SLABSTOCK {
+class Event;
+class SimulationBase;
 
 /*! \brief description of Callback
  *
@@ -18,7 +20,10 @@ class Callback : public DUTIL::ProjectWare
   public:
   static DUTIL::ConstructionValidator const& getConstructinValidator();
 
+  void operator()(SimulationBase& sim, Event& event) const;
+
   private:
+  virtual void callbackImpl(SimulationBase& sim, Event& event) const = 0;
 };
 
 }  // namespace SLABSTOCK

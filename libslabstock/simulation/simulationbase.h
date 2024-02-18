@@ -7,6 +7,7 @@
 #include "libd/libdutil/now.h"
 #include "libd/libdutil/projectware.h"
 
+#include <functional>
 #include <list>
 #include <map>
 
@@ -65,6 +66,8 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   explicit SimulationBase(DUTIL::ConstructionData const& cd,
                           DUTIL::LoggingSource::LoggingSinkPointer sink = nullptr);
 
+  virtual ~SimulationBase();
+
   //! Retrun the absolute start time as a Unix timestamp in milli secconds.
   std::uint64_t getStartTime_ms() const;
 
@@ -74,6 +77,21 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   //! Return if the schedule is empty.
   bool isEmpty() const;
 
+  //! Return the current time tick.
+  DUTIL::Now::Tick now() const;
+
+  /*! \brief Return a copy of the event id of the next scheduled event.
+   *
+   * If the queue is empty, return -1;
+   */
+  std::int64_t peekNextEvent() const;
+
+  /*! \brief Return the Id of the next scheduled event.
+   *
+   * Assert if event queue is empty.
+   */
+  Event::Id getNextEvent() const;
+
   /*! \brief Put or re-put an event into the simulation event Queue.
    *
    * According to the event queue key, place the event into the queue.
@@ -81,26 +99,24 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   void schedule(const Event::Id id, const Priority piority = Priority::NORMAL,
                 const DUTIL::Now::Tick tick = 0);
 
+  //! Remove all events from queue scheduled at times > now().
+  void clearQueue();
+
+  /*! \brief Run until input time tick is reached
+   *
+   * Starts the simulation and steps through the event queue until
+   * the given time tick. The time tick counter gets increased everytime the simualtion's
+   * step() function is called.
+   */
+  Event::Id runUntil(DUTIL::Now::Tick until);
+
+  //! Run the simulation until the last, scheduled event is fully processed and finalized.
+  void runUntilLastEvent();
+
   //! Generate an event Id not in use.
   Event::Id getUnusedEventId() const;
 
   Event::Id createEvent(DUTIL::ConstructionData cd);
-
-  // next steps:
-  // wichtige function for simulation machen
-  // erstes Beispiel zum Laufen bekommen
-  // initialize und finalize implementieren
-  // process weiter implementieren
-
-  // wie mache ich weiter:
-  // über die events steppen
-
-  // danach das erste Beispiel bauen
-
-  protected:
-  Event::Id step();
-
-  void logEventList() const;
 
   /*! \brief Retrieve a concrete event from the event map.
    *
@@ -112,7 +128,9 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   {
     try {
       auto& event = eventMap_.at(id);
-      return dynamic_cast<ConcreteEvent&>(*event);
+      return static_cast<ConcreteEvent&>(*event);
+      //auto& result = dynamic_cast<ConcreteEvent&>(*event.get());
+      //return result;
     } catch (...) {
       this->fatal("Rquested event with Id '" + DUTIL::Utility::toString(id)
                   + "' does not exist. Terminating program.");
@@ -120,14 +138,46 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
     };
   }
 
+  /*! \brief Log all currently mapped events.
+   *
+   * If no event is mapped, emtpy string will be written to stream.
+   * Define a filter string for the event name or Id.
+   */
+  void logEventMap(DUTIL::LoggingSink::LogSeverity level, std::string_view filter = {}) const;
+
+  /*! \brief Call given functor for all unscheduled Events of given type.
+   *
+   * tbd
+   */
+  template <typename ConcreteEvent = Event>
+  void iterate(std::function<void(ConcreteEvent const& event)> functor)
+  {
+    for (auto const& e : eventMap_) {
+      if (e.second->getState() != Event::State::NOT_SCHEDULED) {
+        continue;
+      }
+      auto const* ce = dynamic_cast<ConcreteEvent const*>(e.second.get());
+      if (!ce)
+        continue;
+      functor(*ce);
+    }
+  }
+
+  protected:
+  Event::Id step();
+
   private:
-  virtual void logEventListImpl() const = 0;
+  virtual void runUntilLastEventImpl() = 0;
+
+  // Delete current simualtion id from the list of present simulation objects at destruction.
+  bool removeId() const;
 
   Id id_;
   EventMap eventMap_;
   Queue eventQueue_;
   DUTIL::Now::Tick startTime_ms_;
   DUTIL::Now::Tick startTick_;
+  int now_ = 0;
   static std::list<std::string> simulations_;
 };
 }  // namespace SLABSTOCK

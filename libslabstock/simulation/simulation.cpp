@@ -22,5 +22,13 @@ Simulation::Simulation(DUTIL::LoggingSource::LoggingSinkPointer sink) :
               + "' without ConstructionData.");
 }
 
-void Simulation::logEventListImpl() const {}
+Simulation::~Simulation() {}
+
+void Simulation::runUntilLastEventImpl()
+{
+  while (!isEmpty()) {
+    step();
+  }
+}
+
 }  // namespace SLABSTOCK

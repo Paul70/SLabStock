@@ -8,6 +8,12 @@ D_DEFINE_FACTORYINTERFACE(::SLABSTOCK::Callback)
 
 DUTIL::ConstructionValidator const& Callback::getConstructinValidator()
 {
+  // dummy validator, has no rules.
   static ConstructionValidator cv;
   return cv;
+}
+
+void Callback::operator()(SimulationBase& sim, Event& event) const
+{
+  callbackImpl(sim, event);
 }

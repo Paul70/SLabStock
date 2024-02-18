@@ -13,9 +13,20 @@ class ConstructionValidator;
 
 namespace SLABSTOCK {
 
-/*! \brief description of Initialize
+/*! \brief An event for initializing and triggering
+ *         a concrete process.
  *
- * Longer description of Initialize.
+ * Takes as a construction parameter the ConstructionData of the concrete process to start.
+ * An Initialize event is always created and scheduled into a simulation each time a
+ * concrete process gets initialized, see Process::init() fucntion.
+ *
+ * An Initialize event also gets as construction parameter a ProcessInitializeCallback.
+ * The initializatin logic of a concrete process is:
+ * - create an Initialiez event for this process
+ * - give the Initialize event a ProcessInitializeCallback
+ * - schedule the Initialize event in the simulation event queue
+ * - when the initialize event gets processes the initialize callback is called
+ * - this callback calls Process::resume() fucntion which runs the concrete processes' update fucntion
  */
 
 class Initialize : public Event, public D_NAMED_CLASS(::SLABSTOCK::Initialize)
@@ -26,6 +37,8 @@ class Initialize : public Event, public D_NAMED_CLASS(::SLABSTOCK::Initialize)
   D_NAMED_REFERENCE(ProcessToStart, Process)
 
   static DUTIL::ConstructionValidator const& getConstructionValidator();
+
+  static DUTIL::ConstructionData getProcessCD(Event const& event);
 
   //! Construct with construction data
   explicit Initialize(DUTIL::ConstructionData const& cd, LoggingSinkPointer sink = nullptr);

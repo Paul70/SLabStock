@@ -33,8 +33,10 @@ class Simulation : public SimulationBase, public D_NAMED_CLASS(::SLABSTOCK::Simu
   //! Construct an emty simulation.
   Simulation(DUTIL::LoggingSource::LoggingSinkPointer sink = nullptr);
 
+  virtual ~Simulation() override;
+
   private:
-  virtual void logEventListImpl() const override;
+  virtual void runUntilLastEventImpl() override;
 };
 
 }  // namespace SLABSTOCK

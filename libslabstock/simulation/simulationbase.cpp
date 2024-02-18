@@ -1,5 +1,8 @@
 #include "simulationbase.h"
+#include "finalize.h"
+
 #include "libd/libdutil/constructionvalidator.h"
+#include "simulation/callback.h"
 
 using namespace DUTIL;
 using namespace SLABSTOCK;
@@ -75,10 +78,28 @@ SimulationBase::SimulationBase(DUTIL::ConstructionData const& cd,
     eventMap_.emplace(event->getId(), std::move(event));
   }
 
-  // hier muss ich alle events noch schedulen via insert
+  // schedule given events due to information given in ConstructionData data set
+  // each dataset row contains scheduling information for one event.
+  // Dataset has three columns:
+  // - 1. col: event id;
+  // - 2. col: event priority
+  // - 3. col: event tick
+  auto rows = cd.ds.getRows();
+  for (auto row = 0; row < rows; ++row) {
+    auto values = cd.ds.getValues<Now::Tick>();
+    schedule(values[0], Priority(values[1]), values[2]);
+  }
 
   this->trace("Finished construction of '" + FactoryInterface<SimulationBase>::getInterfaceName()
               + "'.");
+
+  logEventMap(LoggingSink::LogSeverity::TRACE);
+}
+
+SimulationBase::~SimulationBase()
+{
+  auto success = removeId();
+  D_ASSERT(success);
 }
 
 std::uint64_t SimulationBase::getStartTime_ms() const
@@ -96,14 +117,65 @@ bool SimulationBase::isEmpty() const
   return eventQueue_.empty();
 }
 
+Now::Tick SimulationBase::now() const
+{
+  return now_;
+}
+
+std::int64_t SimulationBase::peekNextEvent() const
+{
+  if (eventQueue_.empty()) {
+    return -1;
+  }
+  return eventQueue_.cbegin()->second;
+}
+
+Event::Id SimulationBase::getNextEvent() const
+{
+  D_ASSERT(!eventQueue_.empty());
+  return eventQueue_.cbegin()->second;
+}
+
 void SimulationBase::schedule(const Event::Id id, const Priority priority, const Now::Tick tick)
 {
+  // put events into the event queue.
   auto& event = getEvent(id);
   event.advanceState();
-  eventQueue_.emplace(std::make_pair(tick, priority.value()), id);
+  auto eventTick = now() + tick;
+  eventQueue_.emplace(std::make_pair(eventTick, priority.value()), id);
 
   this->debug("Scheduled event '" + event.whatAmI() + "' at time tick step "
-              + Utility::toString(tick) + " with priority " + priority.toString());
+              + Utility::toString(eventTick) + " with priority " + priority.toString());
+}
+
+void SimulationBase::clearQueue()
+{
+  for (auto iter = eventQueue_.begin(); iter != eventQueue_.end();) {
+    if (iter->first.first <= static_cast<unsigned long>(now_))
+      ++iter;
+    else {
+      auto eventId = iter->second;
+      debug("Removing upcoming event id " + Utility::toString(eventId) + " '"
+            + getEvent(eventId).getDescription() + "' scheduled at "
+            + Utility::toString(iter->first.first) + " from queue.");
+      iter = eventQueue_.erase(iter);
+    }
+  }
+}
+
+Event::Id SimulationBase::runUntil(DUTIL::Now::Tick until)
+{
+  D_ASSERT(until > static_cast<unsigned long>(now_));
+
+  // create and schedule a Finalize event
+  auto id = Finalize::newInstance(*this, until - now_);
+  runUntilLastEvent();
+  return id;
+}
+
+void SimulationBase::runUntilLastEvent()
+{
+  runUntilLastEventImpl();
 }
 
 Event::Id SimulationBase::getUnusedEventId() const
@@ -120,13 +192,63 @@ Event::Id SimulationBase::createEvent(ConstructionData cd)
   cd.setParameter<Event::IdParam>(newId);
   auto event = FactoryInterface<Event>::newInstanceViaTypeSetting(cd);
   event->setLoggingSink(getLoggingSink());
-  eventMap_[newId] = std::move(event);
 
-  this->trace("Creation of new event with Id: " + Utility::toString(newId));
+  this->debug("Creation of new event with Id: " + Utility::toString(newId)
+              + ". \nEvent type: " + event->whatAmI());
+
+  eventMap_[newId] = std::move(event);
   return newId;
 }
 
-void SimulationBase::logEventList() const
+Event::Id SimulationBase::step()
 {
-  logEventListImpl();
+  // Calling this function in case of an empty event queue is forbidden.
+  D_ASSERT(!eventQueue_.empty());
+  auto item = eventQueue_.cbegin();
+  now_ = item->first.first;
+
+  auto eventId = item->second;
+  auto& event = getEvent(eventId);
+  event.advanceState();
+
+  // log message
+
+  // call each callback registered for the current event
+  for (auto& cb : event.takeCallbacks()) {
+    // log message
+
+    (*cb)(*this, event);
+  }
+
+  // log message
+  event.advanceState();
+  eventMap_.erase(eventId);
+  eventQueue_.erase(item);
+  return eventId;
+}
+
+void SimulationBase::logEventMap(LoggingSink::LogSeverity level, std::string_view filter) const
+{
+  this->log("List of curretntly mapped simulation events:", level);
+  std::string list{};
+
+  for (auto& event : eventMap_) {
+    if (!filter.empty()
+        && (Utility::toString(event.first).find(filter) || event.second->whatAmI().find(filter))) {
+      list.append("Event Id: " + Utility::toString(event.first) + '\t'
+                  + "Type: " + event.second->whatAmI() + '\n');
+    }
+  }
+
+  this->log(list, level);
+}
+
+bool SimulationBase::removeId() const
+{
+  auto iterator = std::find(simulations_.cbegin(), simulations_.cend(), id_.value());
+  if (iterator != simulations_.cend()) {
+    simulations_.erase(iterator);
+    return true;
+  }
+  return false;
 }

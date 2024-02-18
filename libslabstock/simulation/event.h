@@ -12,6 +12,7 @@ class ConstructionValidator;
 
 namespace SLABSTOCK {
 class Callback;
+class SimulationBase;
 
 /*! \brief description of Event
  *
@@ -47,6 +48,9 @@ class Event : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   //! Interface function to get the derived class name.
   std::string whatAmI() const;
 
+  //! Return the textual event description.
+  std::string getDescription() const;
+
   //! Return the event id.
   Event::Id getId() const;
 
@@ -56,6 +60,12 @@ class Event : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   //! Return a copy of the current event values.
   DUTIL::ConstructionData getValue() const;
 
+  //! Return a reading access to the events' values.
+  DUTIL::ConstructionData const& getValueRef() const;
+
+  //! Set new or update exsisting event values.
+  void setValue(DUTIL::ConstructionData const& newCD);
+
   /*! \brief Event state machine method.
    *
    * Asserts if method is calles and state is set to 'PROCESSED'.
@@ -64,8 +74,15 @@ class Event : public DUTIL::ProjectWare, public DUTIL::LoggingSource
 
   void addCallback(DUTIL::ConstructionData const& callback_cd);
 
+  std::vector<std::unique_ptr<Callback>> takeCallbacks();
+
+  //! This fucntion gets optinanlly called when the process is finised and has to
+  //! do some additional word, after its termination.
+  bool finalize(SimulationBase& sim);
+
   private:
   virtual std::string whatAmIImpl() const = 0;
+  virtual bool finalizeImpl(SimulationBase& sim);
 
   std::unique_ptr<DUTIL::ConstructionData> value_;
   std::vector<std::unique_ptr<Callback>> callbacks_;
@@ -73,7 +90,7 @@ class Event : public DUTIL::ProjectWare, public DUTIL::LoggingSource
 
 namespace EventDetail {
 template <typename T>
-struct is_event : public std::conjunction<std::is_same<T, Event>, std::is_base_of<Event, T>>
+struct is_event : public std::disjunction<std::is_same<T, Event>, std::is_base_of<Event, T>>
 {};
 
 template <typename T>

@@ -27,6 +27,7 @@ class DummyProcess : public Process, public D_NAMED_CLASS(::SLABSTOCK::DummyProc
   private:
   virtual std::string whatAmIImpl() const override;
   virtual bool updateImpl(SimulationBase& sim, Event::Id& newTarget) override;
+  virtual bool finalizeImpl(SimulationBase& sim) override;
 };
 
 }  // namespace SLABSTOCK
