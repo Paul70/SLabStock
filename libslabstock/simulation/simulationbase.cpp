@@ -2,6 +2,7 @@
 #include "finalize.h"
 
 #include "libd/libdutil/constructionvalidator.h"
+#include "libd/libdutil/datasetrule.h"
 #include "simulation/callback.h"
 
 using namespace DUTIL;
@@ -23,7 +24,12 @@ ConstructionValidator const& SimulationBase::getConstructionValidator()
 {
   using SR = SettingRule;
   using WR = WarelistRule;
+  using DR = DatasetRule;
+
+  DR dr;
+  // clang-format off
   static const ConstructionValidator cv(
+      // rules for construction data settings
       {SR::forNamedParameter<SimulationBase::Id>(SR::Usage::OPTIONAL,
                                                  "Set the simulation Id. If no Id is given, we "
                                                  "will use the address of this object as Id."),
@@ -45,9 +51,31 @@ ConstructionValidator const& SimulationBase::getConstructionValidator()
          sr.defaultValue = 0;
          return sr;
        }()},
+
+      // rules for ware objects
       {WR::forSubobjectList<SimulationBase::EventList>(
-          "Define all currently registered events for this simulation.")},
-      ProjectWare::getConstructionValidator());
+          "Define all currently registered events for this simulation."),
+       [](){
+          WR wr = WR::forSubobject<SimulationBase::EventTicker>("Simulation ticker describing the simulation progress. Set initial values.");
+          wr.usage = WR::Usage::MANDATORY;
+          return wr;}()
+      },
+
+      // inherited validator for base class
+      ProjectWare::getConstructionValidator(),
+
+      // rules for data set
+      []() {
+        DR dr = DR::forDataset(
+            DR::Usage::OPTIONAL,
+            "Dataset with 3 columns for scheduling events when simulation is created. First "
+            "column: Event id, second column: event priority, third column: event tick.");
+        dr.columns = 3;
+        dr.type = Dataset::Type::INT8;
+        return dr;
+      }());
+  // clang-format on
+
   return cv;
 }
 
@@ -57,10 +85,11 @@ SimulationBase::SimulationBase(DUTIL::ConstructionData const& cd,
     id_(getConstructionValidator().validateNamedParameter<SimulationBase::Id>(cd)),
     eventMap_(),
     eventQueue_(),
-    startTime_ms_(
-        getConstructionValidator().validateNamedParameter<SimulationBase::StartTime_ms>(cd)),
-    startTick_(getConstructionValidator().validateNamedParameter<SimulationBase::StartTick>(cd))
+    ticker_(*getConstructionValidator().buildSubobject<SimulationBase::EventTicker>(cd))
+//startTime_ms_(
+//    getConstructionValidator().validateNamedParameter<SimulationBase::StartTime_ms>(cd))
 {
+
   if (id_.value().empty()) {
     std::ostringstream stream;
     stream << this;
@@ -102,10 +131,10 @@ SimulationBase::~SimulationBase()
   D_ASSERT(success);
 }
 
-std::uint64_t SimulationBase::getStartTime_ms() const
-{
-  return startTime_ms_;
-}
+//std::uint64_t SimulationBase::getStartTime_ms() const
+//{
+//  return startTime_ms_;
+//}
 
 SimulationBase::Id SimulationBase::getId() const
 {
@@ -119,7 +148,7 @@ bool SimulationBase::isEmpty() const
 
 Now::Tick SimulationBase::now() const
 {
-  return now_;
+  return ticker_.now();
 }
 
 std::int64_t SimulationBase::peekNextEvent() const
@@ -151,7 +180,7 @@ void SimulationBase::schedule(const Event::Id id, const Priority priority, const
 void SimulationBase::clearQueue()
 {
   for (auto iter = eventQueue_.begin(); iter != eventQueue_.end();) {
-    if (iter->first.first <= static_cast<unsigned long>(now_))
+    if (iter->first.first <= static_cast<unsigned long>(ticker_.now()))
       ++iter;
     else {
       auto eventId = iter->second;
@@ -163,12 +192,12 @@ void SimulationBase::clearQueue()
   }
 }
 
-Event::Id SimulationBase::runUntil(DUTIL::Now::Tick until)
+Event::Id SimulationBase::runUntil(Now::Tick until)
 {
-  D_ASSERT(until > static_cast<unsigned long>(now_));
+  D_ASSERT(until > static_cast<unsigned long>(ticker_.now()));
 
   // create and schedule a Finalize event
-  auto id = Finalize::newInstance(*this, until - now_);
+  auto id = Finalize::newInstance(*this, until - ticker_.now());
   runUntilLastEvent();
   return id;
 }
@@ -205,7 +234,8 @@ Event::Id SimulationBase::step()
   // Calling this function in case of an empty event queue is forbidden.
   D_ASSERT(!eventQueue_.empty());
   auto item = eventQueue_.cbegin();
-  now_ = item->first.first;
+  ticker_.advance(item->first.first);
+  //now_ = item->first.first;
 
   auto eventId = item->second;
   auto& event = getEvent(eventId);

@@ -4,8 +4,9 @@
 #include "libslabstock/utility/basictypes.h"
 
 #include "libd/libdutil/namedreference.h"
-#include "libd/libdutil/now.h"
 #include "libd/libdutil/projectware.h"
+#include "libd/libdutil/ticker.h"
+#include "libd/libdutil/time.h"
 
 #include <functional>
 #include <list>
@@ -29,7 +30,7 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   using EventMap = std::map<Event::Id, std::unique_ptr<Event>>;
 
   //! Key type to identify an event inside an event queue.
-  using QueueKey = std::pair<DUTIL::Now::Tick, Priority>;
+  using QueueKey = std::pair<DUTIL::Ticker::Tick, Priority>;
 
   /*! \brief Map container for all currently existing simulation events.
    *
@@ -47,10 +48,12 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   D_NAMED_REFERENCE(EventList, Event)
 
   //! Parameter holding the start tick value.
-  D_NAMED_PARAMETER(StartTick, DUTIL::Now::Tick)
+  D_NAMED_PARAMETER(StartTick, DUTIL::Ticker::Tick)
 
   //! Parameter holding the start time in milli seconds.
-  D_NAMED_PARAMETER(StartTime_ms, DUTIL::Now::Tick)
+  D_NAMED_PARAMETER(StartTime_ms, DUTIL::TIME::milli_sec_t)
+
+  D_NAMED_REFERENCE(EventTicker, DUTIL::Ticker)
 
   /*! \brief Check if choosen Id is already used.
    *
@@ -78,7 +81,7 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   bool isEmpty() const;
 
   //! Return the current time tick.
-  DUTIL::Now::Tick now() const;
+  DUTIL::Ticker::Tick now() const;
 
   /*! \brief Return a copy of the event id of the next scheduled event.
    *
@@ -97,7 +100,7 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
    * According to the event queue key, place the event into the queue.
    */
   void schedule(const Event::Id id, const Priority piority = Priority::NORMAL,
-                const DUTIL::Now::Tick tick = 0);
+                const DUTIL::Ticker::Tick tick = 0);
 
   //! Remove all events from queue scheduled at times > now().
   void clearQueue();
@@ -108,7 +111,7 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
    * the given time tick. The time tick counter gets increased everytime the simualtion's
    * step() function is called.
    */
-  Event::Id runUntil(DUTIL::Now::Tick until);
+  Event::Id runUntil(DUTIL::Ticker::Tick until);
 
   //! Run the simulation until the last, scheduled event is fully processed and finalized.
   void runUntilLastEvent();
@@ -175,9 +178,12 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   Id id_;
   EventMap eventMap_;
   Queue eventQueue_;
-  DUTIL::Now::Tick startTime_ms_;
-  DUTIL::Now::Tick startTick_;
-  int now_ = 0;
+  DUTIL::Ticker ticker_;
+
+  // eig muss das auch komplett in die real time simulation, habe hier keinerlei Echtzeitbezug
+  //DUTIL::TIME::milli_sec_t startTime_ms_;
+
+  //int now_ = 0;
   static std::list<std::string> simulations_;
 };
 }  // namespace SLABSTOCK
