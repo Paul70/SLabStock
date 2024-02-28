@@ -1,5 +1,7 @@
 #ifndef SLABSTOCK_SIMULATIONSIGNALER_H
 #define SLABSTOCK_SIMULATIONSIGNALER_H
+#include <QObject>
+#include <QTimer>
 
 namespace DUTIL {
 struct ConstructionData;
@@ -12,14 +14,16 @@ namespace SLABSTOCK {
  * Longer description of SimulationSignaler.
  */
 
-class SimulationSignaler
+class SimulationSignaler : public QObject
 {
+  Q_OBJECT
+
   public:
   //! Construct with construction data
-  explicit SimulationSignaler(DUTIL::ConstructionData const & cd);
+  explicit SimulationSignaler(DUTIL::ConstructionData const& cd);
 
   private:
 };
 
-} // namespace SLABSTOCK
-#endif // SLABSTOCK_SIMULATIONSIGNALER_H
+}  // namespace SLABSTOCK
+#endif  // SLABSTOCK_SIMULATIONSIGNALER_H

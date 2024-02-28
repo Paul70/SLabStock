@@ -1,7 +1,9 @@
 message(STATUS "libslabstock CMakeLists.txt: configuring subdirectory ${S_LIB_SLABSTOCK}")
 
 find_package(ZLIB REQUIRED)
-#find_package()
+find_package(Qt5 REQUIRED COMPONENTS
+    Core
+)
 
 set(slabstock_HEADERS
     simulation/callback.h
@@ -44,13 +46,22 @@ target_sources(slabstock PRIVATE
     ${slabstock_HEADERS}
     ${slabstock_SOURCES}
 )
-target_include_directories(slabstock PRIVATE
+target_include_directories(slabstock
+    PRIVATE
     .
     ..
 )
-target_link_libraries(slabstock PUBLIC
+target_link_libraries(slabstock
+    PUBLIC
     dglobals
     dutil
     ZLIB::ZLIB
+    Qt5::Core
+)
+set_target_properties(slabstock PROPERTIES
+    DEFINE_SYMBOL ""
+    AUTOMOC ON
+    AUTORCC ON
+    AUTOUIC ON
 )
 
