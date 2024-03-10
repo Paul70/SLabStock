@@ -1,4 +1,10 @@
 #include "realtimesimulation.h"
+#include <unistd.h>
+#include "finalize.h"
+
+#include "libd/libdutil/clock.h"
+
+#include <algorithm>
 
 using namespace DUTIL;
 using namespace SLABSTOCK;
@@ -32,10 +38,17 @@ ConstructionValidator const& RealTimeSimulation::getConstructionValidator()
 RealTimeSimulation::RealTimeSimulation(ConstructionData const& cd,
                                        DUTIL::LoggingSource::LoggingSinkPointer sink) :
     SimulationBase(cd, sink),
-    clock_(*getConstructionValidator().buildSubobject<RealTimeSimulation::RealTime>(cd)),
+    clock_(),
     tolerance_s_(
         getConstructionValidator().validateNamedParameter<RealTimeSimulation::Tolerance_s>(cd))
 {
+  auto clock = getConstructionValidator().buildSubobject<RealTimeSimulation::RealTime>(cd);
+  if (clock) {
+    clock_ = std::move(clock);
+  } else {
+    clock_ = std::make_unique<DUTIL::Clock>();
+  }
+
   this->trace("Finished construction of '" + this->getShortConcreteClassName()
               + "' without ConstructionData.");
 }
@@ -47,13 +60,70 @@ RealTimeSimulation::RealTimeSimulation(DUTIL::LoggingSource::LoggingSinkPointer 
               + "' without ConstructionData.");
 }
 
+RealTimeSimulation::~RealTimeSimulation() {}
+
 void RealTimeSimulation::runUntilLastEventImpl()
 {
-
   D_ASSERT(!(now() > 0));
 
   // activate the clock and set the absolute start time value in milli seconds
-  clock_.initialize();
+  clock_->initialize();
 
+  // start simulation
   this->info("Startig real time simulation");
+  update(SimulationSignaler::SimulationState::RUNNING);
+
+  // set timer delay.
+  stepAndDelayImpl(false);
+}
+
+void RealTimeSimulation::startSimulationImpl()
+{
+  this->info("Start signalled");
+  runUntilLastEventImpl();
+}
+
+void RealTimeSimulation::stopSimulationImpl()
+{
+  this->info("Stop signalled");
+  Finalize::newInstance(*this, 0);
+}
+
+void RealTimeSimulation::stepAndDelayImpl(bool doStep)
+{
+  if (doStep) {
+    step();
+  }
+
+  if (isEmpty()) {
+    this->info("No more events to process, ending simulation");
+    update(SimulationSignaler::SimulationState::STOPPED);
+    finishSimulation();
+    return;
+  }
+
+  // update the clock to the current system time.
+  clock_->advance();
+  sleep(2);
+
+  // get elapsed time between now (current system time) and start time point.
+
+  // ist immer null muss ich schauen warum
+  auto elapsedRealTime = clock_->elapsedNanoSec();
+
+  // check if next simulation event is scheduled within
+  // the simulation's lag tolerance or later.
+  auto nextEventRealTime
+      = static_cast<TIME::nano_sec_t>(TIME::sByNs * peekNext() * getTimeTickResolution());
+  auto lag_ms = static_cast<int>((elapsedRealTime - nextEventRealTime) * TIME::NsByMs);
+  auto lag_s = lag_ms / TIME::sByMs;
+
+  // If tolerance is violated, throw.
+  if (lag_s >= tolerance_s_) {
+    D_THROW("Simulation was too slow, simulation lag " + Utility::toString(lag_s)
+            + " s is higher than tolerance of " + Utility::toString(tolerance_s_) + " s.");
+  }
+
+  // Set the timer to trigger execution of next event.
+  setTimer(std::max(0, -lag_ms));
 }

@@ -24,6 +24,9 @@ class ProcessFinalizeCallback final :
   //! Static factroy member.
   D_DECLARE_CALLBACK(ProcessFinalizeCallback)
 
+  //! Return construction requirements.
+  static DUTIL::ConstructionValidator const& getConstructionValidator();
+
   //! Construct with construction data
   explicit ProcessFinalizeCallback(DUTIL::ConstructionData const& cd);
 

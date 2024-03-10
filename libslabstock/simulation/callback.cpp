@@ -6,7 +6,7 @@ using namespace SLABSTOCK;
 
 D_DEFINE_FACTORYINTERFACE(::SLABSTOCK::Callback)
 
-DUTIL::ConstructionValidator const& Callback::getConstructinValidator()
+DUTIL::ConstructionValidator const& Callback::getConstructionValidator()
 {
   // dummy validator, has no rules.
   static ConstructionValidator cv;

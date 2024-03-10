@@ -1,13 +1,14 @@
 #ifndef SLABSTOCK_REALTIMESIMULATION_H
 #define SLABSTOCK_REALTIMESIMULATION_H
 #include "simulationbase.h"
+#include "simulationsignaler.h"
 
-#include "libd/libdutil/clock.h"
 #include "libd/libdutil/namedclass.h"
 
 namespace DUTIL {
+class Clock;
 struct ConstructionData;
-}
+}  // namespace DUTIL
 
 namespace SLABSTOCK {
 
@@ -18,9 +19,12 @@ namespace SLABSTOCK {
 
 class RealTimeSimulation final :
     public SimulationBase,
+    public SimulationSignaler,
     public D_NAMED_CLASS(::SLABSTOCK::RealTimeSimulation)
 {
   public:
+  using SimClock = std::unique_ptr<DUTIL::Clock>;
+
   //! static factory member.
   D_DECLARE_SIMULATIONBASE(RealTimeSimulation);
 
@@ -40,10 +44,16 @@ class RealTimeSimulation final :
   //! Construct an empty real time simulation with nothing scheduled.
   explicit RealTimeSimulation(DUTIL::LoggingSource::LoggingSinkPointer sink = nullptr);
 
+  //! Implemented destructor due to forward declaring unique pointer type.
+  ~RealTimeSimulation();
+
   private:
   virtual void runUntilLastEventImpl() override;
+  virtual void startSimulationImpl() override;
+  virtual void stopSimulationImpl() override;
+  virtual void stepAndDelayImpl(bool doStep) override;
 
-  DUTIL::Clock clock_;
+  SimClock clock_;
   DUTIL::real_t tolerance_s_;
 };
 

@@ -6,7 +6,6 @@
 #include "libd/libdutil/namedreference.h"
 #include "libd/libdutil/projectware.h"
 #include "libd/libdutil/ticker.h"
-#include "libd/libdutil/time.h"
 
 #include <functional>
 #include <list>
@@ -32,6 +31,9 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   //! Key type to identify an event inside an event queue.
   using QueueKey = std::pair<DUTIL::Ticker::Tick, Priority>;
 
+  //! Ticker type to indicate/count simulation progress.
+  using SimTicker = std::unique_ptr<DUTIL::Ticker>;
+
   /*! \brief Map container for all currently existing simulation events.
    *
    * One event is identified by the time point it starts happening and its priority.
@@ -47,12 +49,7 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   //! Set of simulation events.
   D_NAMED_REFERENCE(EventList, Event)
 
-  //! Parameter holding the start tick value.
-  D_NAMED_PARAMETER(StartTick, DUTIL::Ticker::Tick)
-
-  //! Parameter holding the start time in milli seconds.
-  D_NAMED_PARAMETER(StartTime_ms, DUTIL::TIME::milli_sec_t)
-
+  //! Event ticker tracking progress of simulation by increasing a counter.
   D_NAMED_REFERENCE(EventTicker, DUTIL::Ticker)
 
   /*! \brief Check if choosen Id is already used.
@@ -74,6 +71,9 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   //! Retrun the absolute start time as a Unix timestamp in milli secconds.
   std::uint64_t getStartTime_ms() const;
 
+  //! Return the time resolution.
+  DUTIL::real_t getTimeTickResolution() const;
+
   //! Retrun simualtion Id.
   SimulationBase::Id getId() const;
 
@@ -82,6 +82,18 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
 
   //! Return the current time tick.
   DUTIL::Ticker::Tick now() const;
+
+  /*! \brief Get the time tick of the next scheduled event.
+   *
+   * Assert that schedule is not empty.
+   */
+  DUTIL::Ticker::Tick peekNext() const;
+
+  /*! \brief Get the tick of the final scheduled event.
+   *
+   * Assert that schedule is not empty.
+   */
+  DUTIL::Ticker::Tick peekLast() const;
 
   /*! \brief Return a copy of the event id of the next scheduled event.
    *
@@ -176,14 +188,10 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   bool removeId() const;
 
   Id id_;
+  SimTicker ticker_;
   EventMap eventMap_;
   Queue eventQueue_;
-  DUTIL::Ticker ticker_;
 
-  // eig muss das auch komplett in die real time simulation, habe hier keinerlei Echtzeitbezug
-  //DUTIL::TIME::milli_sec_t startTime_ms_;
-
-  //int now_ = 0;
   static std::list<std::string> simulations_;
 };
 }  // namespace SLABSTOCK

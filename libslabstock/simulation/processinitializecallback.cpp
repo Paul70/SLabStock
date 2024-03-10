@@ -7,6 +7,12 @@ using namespace SLABSTOCK;
 
 D_DEFINE_CALLBACK(ProcessInitializeCallback)
 
+ConstructionValidator const& ProcessInitializeCallback::getConstructionValidator()
+{
+  static const ConstructionValidator cv;
+  return cv;
+}
+
 ProcessInitializeCallback::ProcessInitializeCallback(ConstructionData const&) {}
 
 void ProcessInitializeCallback::callbackImpl(SimulationBase& sim, Event& event) const

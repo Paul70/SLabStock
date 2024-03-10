@@ -24,6 +24,9 @@ class ClearSimulationCallback final :
   //! Static facoty member
   D_DECLARE_CALLBACK(ClearSimulationCallback)
 
+  //! Return construction requirements.
+  static DUTIL::ConstructionValidator const& getConstructionValidator();
+
   //! Construct with construction data
   explicit ClearSimulationCallback(DUTIL::ConstructionData const& cd);
 

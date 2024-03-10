@@ -10,6 +10,7 @@
 #include "libd/libdutil/namedclass.h"
 #include "libd/libdutil/streamloggingsink.h"
 
+#include <chrono>
 #include <sstream>
 
 using namespace SLABSTOCK;
@@ -85,7 +86,7 @@ TEST_F(SimPyExampleCarTests, testWhatAmI)
   EXPECT_EQ(car.whatAmI(), ExampleCar::getClassName());
 }
 
-TEST_F(SimPyExampleCarTests, testExampleCarManualSimulation)
+TEST_F(SimPyExampleCarTests, testExampleCarManualSimulationSetup)
 {
   // log stream pionter
   auto oss = std::make_shared<std::stringstream>();
@@ -130,7 +131,7 @@ TEST_F(SimPyExampleCarTests, testExampleCarManualSimulation)
   EXPECT_THAT(os, testing::HasSubstr("Start parking at 14"));
 }
 
-TEST_F(SimPyExampleCarTests, exampleCar1_setupDoneWithConstructionData_worksAsExpected)
+TEST_F(SimPyExampleCarTests, testExampleCarManualSimulationSetupDoneWithConstructionData)
 {
   using CD = ConstructionData;
   auto oss = std::make_shared<std::stringstream>();

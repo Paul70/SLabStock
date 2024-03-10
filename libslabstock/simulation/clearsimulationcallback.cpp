@@ -6,6 +6,12 @@ using namespace SLABSTOCK;
 
 D_DEFINE_CALLBACK(ClearSimulationCallback)
 
+ConstructionValidator const& ClearSimulationCallback::getConstructionValidator()
+{
+  static const ConstructionValidator cv;
+  return cv;
+}
+
 ClearSimulationCallback::ClearSimulationCallback([[maybe_unused]] ConstructionData const& cd) {}
 
 void ClearSimulationCallback::callbackImpl(SimulationBase& sim, Event&) const

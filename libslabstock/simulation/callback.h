@@ -18,7 +18,7 @@ class SimulationBase;
 class Callback : public DUTIL::ProjectWare
 {
   public:
-  static DUTIL::ConstructionValidator const& getConstructinValidator();
+  static DUTIL::ConstructionValidator const& getConstructionValidator();
 
   void operator()(SimulationBase& sim, Event& event) const;
 

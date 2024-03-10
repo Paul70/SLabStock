@@ -33,36 +33,16 @@ ConstructionValidator const& SimulationBase::getConstructionValidator()
       {SR::forNamedParameter<SimulationBase::Id>(SR::Usage::OPTIONAL,
                                                  "Set the simulation Id. If no Id is given, we "
                                                  "will use the address of this object as Id."),
-       []() {
-         SR sr = SR::forNamedParameter<SimulationBase::StartTime_ms>(
-             SR::Usage::MANDATORY_WITH_DEFAULT,
-             "Define what the simulation reports as absolute time and set the simulation start "
-             "time point with respect to a std::chrono clock. This parameter is especially "
-             "important for real time simulations. See RealTimeSimulation class.");
-         sr.defaultValue = 0;
-         return sr;
-       }(),
-       []() {
-         SR sr = SR::forNamedParameter<SimulationBase::StartTick>(
-             SR::Usage::MANDATORY_WITH_DEFAULT,
-             "Define the start time tick. A time tick is an integer counter which will be "
-             "increased every time the simulation advnances in time by any step. A time tick "
-             "corresponds to a real time point.");
-         sr.defaultValue = 0;
-         return sr;
-       }()},
+      },
 
       // rules for ware objects
       {WR::forSubobjectList<SimulationBase::EventList>(
           "Define all currently registered events for this simulation."),
-       [](){
-          WR wr = WR::forSubobject<SimulationBase::EventTicker>("Simulation ticker describing the simulation progress. Set initial values.");
-          wr.usage = WR::Usage::MANDATORY;
-          return wr;}()
-      },
+       WR::forSubobject<SimulationBase::EventTicker>("Simulation ticker describing the simulation progress by counting simulation steps.")
+      },{},
 
       // inherited validator for base class
-      ProjectWare::getConstructionValidator(),
+      //ProjectWare::getConstructionValidator(),
 
       // rules for data set
       []() {
@@ -83,13 +63,12 @@ SimulationBase::SimulationBase(DUTIL::ConstructionData const& cd,
                                LoggingSource::LoggingSinkPointer sink) :
     LoggingSource(sink),
     id_(getConstructionValidator().validateNamedParameter<SimulationBase::Id>(cd)),
+    ticker_(),
     eventMap_(),
-    eventQueue_(),
-    ticker_(*getConstructionValidator().buildSubobject<SimulationBase::EventTicker>(cd))
-//startTime_ms_(
-//    getConstructionValidator().validateNamedParameter<SimulationBase::StartTime_ms>(cd))
+    eventQueue_()
 {
 
+  // create a unique simulation id
   if (id_.value().empty()) {
     std::ostringstream stream;
     stream << this;
@@ -101,6 +80,15 @@ SimulationBase::SimulationBase(DUTIL::ConstructionData const& cd,
     simulations_.emplace_back(id_);
   }
 
+  // build subobject SimTicker
+  auto eventticker = getConstructionValidator().buildSubobject<SimulationBase::EventTicker>(cd);
+  if (eventticker) {
+    ticker_ = std::move(eventticker);
+  } else {
+    ticker_ = std::make_unique<Ticker>();
+  }
+
+  // build event subobjects
   auto eventlist = getConstructionValidator().buildSubobjectList<SimulationBase::EventList>(cd);
   for (auto&& event : eventlist) {
     event->setLoggingSink(this->getLoggingSink());
@@ -131,10 +119,10 @@ SimulationBase::~SimulationBase()
   D_ASSERT(success);
 }
 
-//std::uint64_t SimulationBase::getStartTime_ms() const
-//{
-//  return startTime_ms_;
-//}
+DUTIL::real_t SimulationBase::getTimeTickResolution() const
+{
+  return 1.0;
+}
 
 SimulationBase::Id SimulationBase::getId() const
 {
@@ -146,9 +134,21 @@ bool SimulationBase::isEmpty() const
   return eventQueue_.empty();
 }
 
-Now::Tick SimulationBase::now() const
+Ticker::Tick SimulationBase::now() const
 {
-  return ticker_.now();
+  return ticker_->now();
+}
+
+DUTIL::Ticker::Tick SimulationBase::peekNext() const
+{
+  D_ASSERT(!eventQueue_.empty());
+  return eventQueue_.cbegin()->first.first;
+}
+
+DUTIL::Ticker::Tick SimulationBase::peekLast() const
+{
+  D_ASSERT(!eventQueue_.empty());
+  return eventQueue_.cend()->first.first;
 }
 
 std::int64_t SimulationBase::peekNextEvent() const
@@ -165,7 +165,7 @@ Event::Id SimulationBase::getNextEvent() const
   return eventQueue_.cbegin()->second;
 }
 
-void SimulationBase::schedule(const Event::Id id, const Priority priority, const Now::Tick tick)
+void SimulationBase::schedule(const Event::Id id, const Priority priority, const Ticker::Tick tick)
 {
   // put events into the event queue.
   auto& event = getEvent(id);
@@ -180,7 +180,7 @@ void SimulationBase::schedule(const Event::Id id, const Priority priority, const
 void SimulationBase::clearQueue()
 {
   for (auto iter = eventQueue_.begin(); iter != eventQueue_.end();) {
-    if (iter->first.first <= static_cast<unsigned long>(ticker_.now()))
+    if (iter->first.first <= ticker_->now())
       ++iter;
     else {
       auto eventId = iter->second;
@@ -192,12 +192,12 @@ void SimulationBase::clearQueue()
   }
 }
 
-Event::Id SimulationBase::runUntil(Now::Tick until)
+Event::Id SimulationBase::runUntil(Ticker::Tick until)
 {
-  D_ASSERT(until > static_cast<unsigned long>(ticker_.now()));
+  D_ASSERT(until > ticker_->now());
 
   // create and schedule a Finalize event
-  auto id = Finalize::newInstance(*this, until - ticker_.now());
+  auto id = Finalize::newInstance(*this, until - ticker_->now());
   runUntilLastEvent();
   return id;
 }
@@ -234,8 +234,7 @@ Event::Id SimulationBase::step()
   // Calling this function in case of an empty event queue is forbidden.
   D_ASSERT(!eventQueue_.empty());
   auto item = eventQueue_.cbegin();
-  ticker_.advance(item->first.first);
-  //now_ = item->first.first;
+  ticker_->advance(item->first.first);
 
   auto eventId = item->second;
   auto& event = getEvent(eventId);

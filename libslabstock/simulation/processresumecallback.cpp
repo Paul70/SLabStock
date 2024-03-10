@@ -15,7 +15,7 @@ ConstructionValidator const& ProcessResumeCallback::getConstructionValidator()
       {SR::forNamedParameter<ProcessResumeCallback::ProcessToResumeId>(
           SR::Usage::MANDATORY_NO_DEFAULT, "Define the id of the process to resume.")},
       {},
-      Callback::getConstructinValidator());
+      Callback::getConstructionValidator());
   // clang-format on
   return cv;
 }

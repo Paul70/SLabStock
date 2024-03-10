@@ -7,6 +7,7 @@ set(slabstock_tests_SOURCES
     libslabstock/simulationtests.cpp
     main.cpp
     simpy_examples/simpyexample_car.cpp
+    simpy_examples/simpyexample_realtimecar.cpp
     testbase.cpp
 )
 

@@ -1,7 +1,5 @@
 #include "simulation.h"
 
-//#include "libd/libdutil/constructionvalidator.h"
-
 using namespace DUTIL;
 
 namespace SLABSTOCK {

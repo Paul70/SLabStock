@@ -24,6 +24,9 @@ class ProcessInitializeCallback final :
   //! Static factory
   D_DECLARE_CALLBACK(ProcessInitializeCallback)
 
+  //! Return construction requirements.
+  static DUTIL::ConstructionValidator const& getConstructionValidator();
+
   //! Construct with construction data
   explicit ProcessInitializeCallback(DUTIL::ConstructionData const& cd);
 

@@ -6,7 +6,6 @@
 #include "libd/libdutil/namedclass.h"
 
 namespace DUTIL {
-//class ConstructionValidator;
 struct ConstructionData;
 }  // namespace DUTIL
 
