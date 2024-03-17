@@ -103,7 +103,7 @@ SimulationBase::SimulationBase(DUTIL::ConstructionData const& cd,
   // - 3. col: event tick
   auto rows = cd.ds.getRows();
   for (auto row = 0; row < rows; ++row) {
-    auto values = cd.ds.getValues<Now::Tick>();
+    auto values = cd.ds.getValues<Ticker::Tick>();
     schedule(values[0], Priority(values[1]), values[2]);
   }
 
@@ -122,6 +122,11 @@ SimulationBase::~SimulationBase()
 DUTIL::real_t SimulationBase::getTimeTickResolution() const
 {
   return 1.0;
+}
+
+DUTIL::real_t SimulationBase::getElapsedSimulatedTime() const
+{
+  return ticker_->getElapsedTime();
 }
 
 SimulationBase::Id SimulationBase::getId() const
@@ -143,6 +148,37 @@ DUTIL::Ticker::Tick SimulationBase::peekNext() const
 {
   D_ASSERT(!eventQueue_.empty());
   return eventQueue_.cbegin()->first.first;
+}
+
+TIME::basic_sec_t SimulationBase::peekNextTime(TIME::UnitPrefix prefix) const
+{
+  switch (prefix) {
+    case TIME::UnitPrefix::NANO:
+      return static_cast<TIME::basic_sec_t>((ticker_->getResolution_s() * peekNext())
+                                            * TIME::oneByNano);
+      break;
+    case TIME::UnitPrefix::MICRO:
+      return static_cast<TIME::basic_sec_t>((ticker_->getResolution_s() * peekNext())
+                                            * TIME::oneByMicro);
+      break;
+    case TIME::UnitPrefix::MILLI:
+      return static_cast<TIME::basic_sec_t>((ticker_->getResolution_s() * peekNext())
+                                            * TIME::oneByMilli);
+      break;
+    case TIME::UnitPrefix::SECONDS:
+      return static_cast<TIME::basic_sec_t>((ticker_->getResolution_s() * peekNext()));
+      break;
+    case TIME::UnitPrefix::KILO:
+      return static_cast<TIME::basic_sec_t>((ticker_->getResolution_s() * peekNext())
+                                            * TIME::oneByKilo);
+      break;
+    case TIME::UnitPrefix::MEGA:
+      return static_cast<TIME::basic_sec_t>((ticker_->getResolution_s() * peekNext())
+                                            * TIME::oneByMega);
+      break;
+    default:
+      return static_cast<TIME::basic_sec_t>((ticker_->getResolution_s() * peekNext()));
+  }
 }
 
 DUTIL::Ticker::Tick SimulationBase::peekLast() const

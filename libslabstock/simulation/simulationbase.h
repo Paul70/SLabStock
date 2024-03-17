@@ -6,6 +6,7 @@
 #include "libd/libdutil/namedreference.h"
 #include "libd/libdutil/projectware.h"
 #include "libd/libdutil/ticker.h"
+#include "libd/libdutil/time.h"
 
 #include <functional>
 #include <list>
@@ -74,6 +75,9 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   //! Return the time resolution.
   DUTIL::real_t getTimeTickResolution() const;
 
+  //! Return the elapsed simulation time in seconds.
+  DUTIL::real_t getElapsedSimulatedTime() const;
+
   //! Retrun simualtion Id.
   SimulationBase::Id getId() const;
 
@@ -88,6 +92,13 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
    * Assert that schedule is not empty.
    */
   DUTIL::Ticker::Tick peekNext() const;
+
+  /*! \brief Get the time in seconds of the next scheduled event.
+   *
+   * Assert that schedule is not empty.
+   */
+  DUTIL::TIME::basic_sec_t peekNextTime(DUTIL::TIME::UnitPrefix prefix
+                                        = DUTIL::TIME::UnitPrefix::SECONDS) const;
 
   /*! \brief Get the tick of the final scheduled event.
    *

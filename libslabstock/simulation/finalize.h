@@ -4,7 +4,7 @@
 
 #include "libd/libdutil/concretefactory.h"
 #include "libd/libdutil/namedclass.h"
-#include "libd/libdutil/now.h"
+#include "libd/libdutil/ticker.h"
 
 namespace DUTIL {
 struct ConstructionData;
@@ -26,7 +26,7 @@ class Finalize final : public Event, public D_NAMED_CLASS(::SLABSTOCK::Finalize)
   D_DECLARE_EVENT(Finalize)
 
   //! Define the scheduled time point of the Finalize event.
-  D_NAMED_PARAMETER(Delay, DUTIL::Now::Tick)
+  D_NAMED_PARAMETER(Delay, DUTIL::Ticker::Tick)
 
   //! Inherit ConstructionValidator from Event.
   using Event::getConstructionValidator;

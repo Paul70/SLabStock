@@ -74,6 +74,15 @@ class ExampleCar final : public Process, public D_NAMED_CLASS(::ExampleCar)
   }
 
   virtual bool finalizeImpl(SimulationBase&) override { return true; }
+
+  public:
+  using Map = std::vector<std::pair<int, double>>;
+
+  static std::shared_ptr<Map> getStaticMap()
+  {
+    static auto map = std::make_shared<Map>();
+    return map;
+  }
 };
 
 D_DEFINE_PROCESS(ExampleCar)
@@ -137,7 +146,7 @@ TEST_F(SimPyExampleCarTests, testExampleCarManualSimulationSetupDoneWithConstruc
   auto oss = std::make_shared<std::stringstream>();
   auto sls = std::make_shared<StreamLoggingSink>(oss, LoggingSink::LogSeverity::INFO);
 
-  Simulation sim(CD().set(Dataset(std::vector<DUTIL::Now::Tick>{0, 0, 0}, 3))
+  Simulation sim(CD().set(Dataset(std::vector<DUTIL::Ticker::Tick>{0, 0, 0}, 3))
                      .addSubobject<Simulation::EventList>(
                          CD().setParameter<Initialize::IdParam>(0)
                              .setParameter<Initialize::Description>("init for Example 1 car")

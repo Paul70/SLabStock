@@ -118,7 +118,7 @@ TEST_F(SimPyExampleRealTimeCarTests, exampleCar1_realTimeInTwoTenthsSeconds_work
   auto end = std::chrono::steady_clock::now();
 
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-  auto result = duration - (simTime * TIME::sByMs * resolution + puffer);
+  auto result = duration - (simTime * TIME::oneByMilli * resolution + puffer);
   EXPECT_LE(result, 200);
 
   auto const os = oss->str();

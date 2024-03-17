@@ -4,7 +4,7 @@
 
 #include "libd/libdutil/concretefactory.h"
 #include "libd/libdutil/namedclass.h"
-#include "libd/libdutil/now.h"
+#include "libd/libdutil/ticker.h"
 
 namespace DUTIL {
 struct ConstructionData;
@@ -24,7 +24,7 @@ class Timeout : public Event, public D_NAMED_CLASS(::SLABSTOCK::Timeout)
   public:
   D_DECLARE_EVENT(Timeout);
 
-  D_NAMED_PARAMETER(Delay, DUTIL::Now::Tick);
+  D_NAMED_PARAMETER(Delay, DUTIL::Ticker::Tick);
 
   static DUTIL::ConstructionValidator const& getConstructionValidator();
 
@@ -36,7 +36,7 @@ class Timeout : public Event, public D_NAMED_CLASS(::SLABSTOCK::Timeout)
   private:
   virtual std::string whatAmIImpl() const override;
 
-  DUTIL::Now::Tick delay_;
+  DUTIL::Ticker::Tick delay_;
 };
 
 }  // namespace SLABSTOCK

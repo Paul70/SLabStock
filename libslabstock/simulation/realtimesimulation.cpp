@@ -102,21 +102,12 @@ void RealTimeSimulation::stepAndDelayImpl(bool doStep)
     return;
   }
 
-  // update the clock to the current system time.
+  // update the clock and set timer for next event.
   clock_->advance();
-  sleep(2);
-
-  // get elapsed time between now (current system time) and start time point.
-
-  // ist immer null muss ich schauen warum
-  auto elapsedRealTime = clock_->elapsedNanoSec();
-
-  // check if next simulation event is scheduled within
-  // the simulation's lag tolerance or later.
-  auto nextEventRealTime
-      = static_cast<TIME::nano_sec_t>(TIME::sByNs * peekNext() * getTimeTickResolution());
-  auto lag_ms = static_cast<int>((elapsedRealTime - nextEventRealTime) * TIME::NsByMs);
-  auto lag_s = lag_ms / TIME::sByMs;
+  auto elapsed_nano_sec = clock_->elapsed(TIME::UnitPrefix::NANO);
+  auto nextEventTime = peekNextTime(TIME::UnitPrefix::NANO);
+  auto lag_ms = static_cast<int>((elapsed_nano_sec - nextEventTime) * TIME::nanoByMilli);
+  auto lag_s = lag_ms / TIME::oneByMilli;
 
   // If tolerance is violated, throw.
   if (lag_s >= tolerance_s_) {
@@ -124,6 +115,6 @@ void RealTimeSimulation::stepAndDelayImpl(bool doStep)
             + " s is higher than tolerance of " + Utility::toString(tolerance_s_) + " s.");
   }
 
-  // Set the timer to trigger execution of next event.
+  // Set timer
   setTimer(std::max(0, -lag_ms));
 }
