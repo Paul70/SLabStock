@@ -12,9 +12,11 @@ set(slabstock_HEADERS
     simulation/event.h
     simulation/finalize.h
     simulation/initialize.h
+    simulation/interrupt.h
     simulation/process.h
     simulation/processfinalizecallback.h
     simulation/processinitializecallback.h
+    simulation/processinterruptcallback.h
     simulation/processresumecallback.h
     simulation/realtimesimulation.h
     simulation/simulation.h
@@ -30,9 +32,11 @@ set(slabstock_SOURCES
     simulation/event.cpp
     simulation/finalize.cpp
     simulation/initialize.cpp
+    simulation/interrupt.cpp
     simulation/process.cpp
     simulation/processfinalizecallback.cpp
     simulation/processinitializecallback.cpp
+    simulation/processinterruptcallback.cpp
     simulation/processresumecallback.cpp
     simulation/realtimesimulation.cpp
     simulation/simulation.cpp

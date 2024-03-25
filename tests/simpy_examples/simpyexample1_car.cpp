@@ -17,14 +17,16 @@ using namespace SLABSTOCK;
 using namespace DUTIL;
 
 namespace {
-class SimPyExampleCarTests : public TestBase
+class SimPyExampleCarTests1 : public TestBase
 {};
 
 class ExampleCar final : public Process, public D_NAMED_CLASS(::ExampleCar)
 {
   public:
+  //! Static factory memeber.
   D_DECLARE_PROCESS(ExampleCar)
 
+  //! Possible set of car conditions.
   D_NAMED_ENUM(DrivingState, DRIVING, PARKING)
 
   static constexpr label_t parkingDuration = 5;
@@ -34,6 +36,15 @@ class ExampleCar final : public Process, public D_NAMED_CLASS(::ExampleCar)
   using Process::getConstructionValidator;
   using Process::Process;
 
+  /*! \brief Implementation of parking.
+   *
+   *  Define waht parking means and create a time out event
+   *  to signal when parking will be finished  and this process should
+   *  be updated again.
+   *
+   * \param:
+   * sim: Referece to the simulation instance.
+   */
   Event::Id parking(SimulationBase& sim)
   {
     this->info("Start parking at " + Utility::toString(sim.now()));
@@ -42,6 +53,15 @@ class ExampleCar final : public Process, public D_NAMED_CLASS(::ExampleCar)
         parkingDuration);
   }
 
+  /*! \brief Implementation of driving.
+   *
+   *  Define waht driving means and create a time out event
+   *  to signal when driving action will be finished and this process should
+   *  be updated again.
+   *
+   * \param:
+   * sim: Referece to the simulation instance.
+   */
   Event::Id driving(SimulationBase& sim)
   {
     this->info("Start driving at " + Utility::toString(sim.now()));
@@ -74,28 +94,19 @@ class ExampleCar final : public Process, public D_NAMED_CLASS(::ExampleCar)
   }
 
   virtual bool finalizeImpl(SimulationBase&) override { return true; }
-
-  public:
-  using Map = std::vector<std::pair<int, double>>;
-
-  static std::shared_ptr<Map> getStaticMap()
-  {
-    static auto map = std::make_shared<Map>();
-    return map;
-  }
 };
 
 D_DEFINE_PROCESS(ExampleCar)
 
 }  // namespace
 
-TEST_F(SimPyExampleCarTests, testWhatAmI)
+TEST_F(SimPyExampleCarTests1, testWhatAmI)
 {
   ExampleCar car(Process::getDefaultConstructionData());
   EXPECT_EQ(car.whatAmI(), ExampleCar::getClassName());
 }
 
-TEST_F(SimPyExampleCarTests, testExampleCarManualSimulationSetup)
+TEST_F(SimPyExampleCarTests1, testExampleCarManualSimulationSetup)
 {
   // log stream pionter
   auto oss = std::make_shared<std::stringstream>();
@@ -140,7 +151,7 @@ TEST_F(SimPyExampleCarTests, testExampleCarManualSimulationSetup)
   EXPECT_THAT(os, testing::HasSubstr("Start parking at 14"));
 }
 
-TEST_F(SimPyExampleCarTests, testExampleCarManualSimulationSetupDoneWithConstructionData)
+TEST_F(SimPyExampleCarTests1, testExampleCarManualSimulationSetupDoneWithConstructionData)
 {
   using CD = ConstructionData;
   auto oss = std::make_shared<std::stringstream>();
@@ -148,8 +159,9 @@ TEST_F(SimPyExampleCarTests, testExampleCarManualSimulationSetupDoneWithConstruc
 
   Simulation sim(CD().set(Dataset(std::vector<DUTIL::Ticker::Tick>{0, 0, 0}, 3))
                      .addSubobject<Simulation::EventList>(
-                         CD().setParameter<Initialize::IdParam>(0)
-                             .setParameter<Initialize::Description>("init for Example 1 car")
+                         CD().setConcreteClassParameter<Initialize>()
+                             .setParameter<Initialize::IdParam>(0)
+                             .setParameter<Initialize::Description>("init event for Example 1 car")
                              .addSubobject<Initialize::CallbackList>(
                                  CD().setConcreteClassParameter<ProcessInitializeCallback>())
                              .addSubobject<Initialize::ProcessToStart>(
@@ -157,8 +169,7 @@ TEST_F(SimPyExampleCarTests, testExampleCarManualSimulationSetupDoneWithConstruc
                                      .setParameter<Process::TargetId>(0)
                                      .setEnum(ExampleCar::DrivingState::DRIVING)
                                      .setParameter<Event::Description>("Example 1 car")
-                                     .setConcreteClassParameter<ExampleCar>())
-                             .setConcreteClassParameter<Initialize>()),
+                                     .setConcreteClassParameter<ExampleCar>())),
                  sls);
 
   sim.runUntil(15);

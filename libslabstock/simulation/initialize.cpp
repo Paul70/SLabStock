@@ -19,7 +19,6 @@ ConstructionValidator const& Initialize::getConstructionValidator()
 
 ConstructionData Initialize::getProcessCD(Event const& event)
 {
-  // in cd brauch ich hier noch ne fucntion mit der ich das subovje
   return event.getValue().getSubObjectCd<ProcessToStart>();
 }
 

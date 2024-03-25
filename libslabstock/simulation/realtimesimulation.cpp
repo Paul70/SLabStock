@@ -102,7 +102,7 @@ void RealTimeSimulation::stepAndDelayImpl(bool doStep)
     return;
   }
 
-  // update the clock and set timer for next event.
+  // calculate lag till next scheduled event time.
   clock_->advance();
   auto elapsed_nano_sec = clock_->elapsed(TIME::UnitPrefix::NANO);
   auto nextEventTime = peekNextTime(TIME::UnitPrefix::NANO);

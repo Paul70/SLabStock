@@ -22,11 +22,12 @@ namespace SLABSTOCK {
  *
  * An Initialize event also gets as construction parameter a ProcessInitializeCallback.
  * The initializatin logic of a concrete process is:
- * - create an Initialiez event for this process
+ * - create an Initializ event for this process
  * - give the Initialize event a ProcessInitializeCallback
  * - schedule the Initialize event in the simulation event queue
- * - when the initialize event gets processes the initialize callback is called
+ * - when the initialize event gets processed the process initialize callback is called
  * - this callback calls Process::resume() fucntion which runs the concrete processes' update fucntion
+ *   for the first time, so update has to be implemented starting with the init state of a process.
  */
 
 class Initialize : public Event, public D_NAMED_CLASS(::SLABSTOCK::Initialize)

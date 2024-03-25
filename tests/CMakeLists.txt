@@ -6,8 +6,10 @@ set(libd_tests_HEADERS
 set(slabstock_tests_SOURCES
     libslabstock/simulationtests.cpp
     main.cpp
-    simpy_examples/simpyexample_car.cpp
-    simpy_examples/simpyexample_realtimecar.cpp
+    simpy_examples/simpyexample1_car.cpp
+    simpy_examples/simpyexample2_realtimecar.cpp
+    simpy_examples/simpyexample3_chargingcar.cpp
+    simpy_examples/simpyexample4_cardriver.cpp
     testbase.cpp
 )
 

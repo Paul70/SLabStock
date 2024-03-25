@@ -10,9 +10,10 @@ namespace SLABSTOCK {
 class Event;
 class SimulationBase;
 
-/*! \brief description of Callback
+/*! \brief Event Callback base class
  *
- * Longer description of Callback.
+ * Base class for all simulation callback typs. Essential purpose is to
+ * offer a pure virtual call operator and a factory interface.
  */
 
 class Callback : public DUTIL::ProjectWare
