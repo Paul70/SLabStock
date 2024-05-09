@@ -1,0 +1,226 @@
+{
+    "database": "slabstock_database",
+    "name": "slabstock_test",
+    "tables": [
+        {
+            "name": "depots", 
+            "description": "Information about all depots currently holding stocks.",
+            "number_columns": 2,
+            "column_definitions": [
+                {
+                    "column": "id",
+                    "type": "INT AUTO_INCREMENT PRIMARY KEY",
+                    "reference": [],
+                    "auto": true
+                },
+                {
+                    "column": "name",
+                    "type": "VARCHAR(255) UNIQUE",
+                    "reference": [],
+                    "auto": false
+                }
+            ]
+        },
+        {
+            "name": "stock_holdings",
+            "description": "List and information of all company stocks currently in all depots.",
+            "number_columns": 4,
+            "column_definitions": [
+                {
+                    "column": "id",
+                    "type": "INT AUTO_INCREMENT PRIMARY KEY",
+                    "reference": [],
+                    "auto": true
+                },
+                {
+                    "column": "name",
+                    "type": "VARCHAR(255) UNIQUE",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "number",
+                    "type": "VARCHAR(255)",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "identifier",
+                    "type": "VARCHAR(5) UNIQUE",
+                    "reference": [],
+                    "auto": false
+                }
+            ]
+        },
+        {
+            "name": "company_isin",
+            "description": "Table to list current stocks and their bying prirces of one company.",
+            "number_columns": 7,
+            "column_definitions": [
+                {
+                    "column": "id",
+                    "type": "INT AUTO_INCREMENT PRIMARY KEY",
+                    "reference": [],
+                    "auto": true
+                },
+                {
+                    "column": "trade_date",
+                    "type": "DATE",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "number",
+                    "type": "INT",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "stock_price",
+                    "type": "DECIMAL(10,2)",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "currency",
+                    "type": "VARCHAR(3)",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "order_number",
+                    "type": "VARCHAR(255) UNIQUE",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "depot",
+                    "type": "VARCHAR(255)",
+                    "reference": [],
+                    "auto": false
+                }
+            ]
+        },
+        {
+            "name": "transactions",
+            "description": "List containing all transactions of all depots.",
+            "number_columns": 19,
+            "column_definitions": [
+                {
+                    "column": "id",
+                    "type": "INT AUTO_INCREMENT PRIMARY KEY",
+                    "reference": [],
+                    "auto": true
+                },
+                {
+                    "column": "depot_id",
+                    "type": "INT",
+                    "reference": ["name", "depots", "id"],
+                    "auto": false
+                },
+                {
+                    "column": "trade_date",
+                    "type": "DATE",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "valute_date",
+                    "type": "DATE",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "company",
+                    "type": "VARCHAR(255)",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "ISIN",
+                    "type": "VARCHAR(12)",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "WKN",
+                    "type": "VARCHAR(6)",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "transaction_type",
+                    "type": "VARCHAR(255)",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "trading_place",
+                    "type": "VARCHAR(255)",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "number",
+                    "type": "DECIMAL(10,2)",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "sales_volume",
+                    "type": "DECIMAL(10,2)",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "currency",
+                    "type": "VARCHAR(3)",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "execution_price",
+                    "type": "DECIMAL(10,2)",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "exchange_rate_currency",
+                    "type": "VARCHAR(3)",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "execution_date",
+                    "type": "DATETIME",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "amount_loan",
+                    "type": "DECIMAL(10,2)",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "trade_currency",
+                    "type": "VARCHAR(3)",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "order_state",
+                    "type": "VARCHAR(255)",
+                    "reference": [],
+                    "auto": false
+                },
+                {
+                    "column": "order_number",
+                    "type": "VARCHAR(255) UNIQUE",
+                    "reference": [],
+                    "auto": false
+                }
+            ]
+        }
+    ]
+}

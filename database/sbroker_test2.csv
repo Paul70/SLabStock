@@ -1,0 +1,35 @@
+Handelsdatum;Valutadatum;Name;ISIN;WKN;Transaktionsart;Handelsplatz;Nominal / Stuck;Umsatz;Wahrung;Ausfuhrungskurs;Kurswahrung;Ausfuhrungsdatum;Ausmachender Betrag;Handelswahrung;Orderstatus;Ordernummer
+30.04.2024;02.05.2024;Boeing Co. Registered Shares DL 5;US0970231058;850471;Verkauf;Dsseldorf;5;0,75;USD;0,25;USD;02.04.2024 23:05;0,56;USD;abgerechnet;62999999
+29.03.2024;03.04.2024;Global Payments Inc. Registered Shares o.N.;US37940X1028;603111;Ausschttung;-;3;0,75;USD;0,25;USD;02.04.2024 23:05;0,56;USD;abgerechnet;-
+29.12.2023;03.01.2024;Global Payments Inc. Registered Shares o.N.;US37940X1028;603111;Ausschttung;-;3;0,75;USD;0,25;USD;02.01.2024 22:24;0,56;USD;abgerechnet;-
+29.09.2023;03.10.2023;Global Payments Inc. Registered Shares o.N.;US37940X1028;603111;Ausschttung;-;3;0,75;USD;0,25;USD;03.10.2023 22:09;0,57;USD;abgerechnet;-
+30.06.2023;04.07.2023;Global Payments Inc. Registered Shares o.N.;US37940X1028;603111;Ausschttung;-;3;0,75;USD;0,25;USD;03.07.2023 22:24;0,56;USD;abgerechnet;-
+16.06.2023;20.06.2023;Tesla Inc. Registered Shares DL-,001;US88160R1014;A1CX3T;Verkauf;Tradegate Exchange Limit;2;468,80;EUR;234,40;EUR;16.06.2023 10:35;397,35;EUR;abgerechnet;62285984
+09.05.2023;09.05.2023;Allianz SE vink.Namens-Aktien o.N.;DE0008404005;840400;Ausschttung;-;28;319,20;EUR;11,40;EUR;08.05.2023 22:32;230,41;EUR;abgerechnet;-
+04.05.2023;04.05.2023;Bayer AG Namens-Aktien o.N.;DE000BAY0017;BAY001;Ausschttung;-;10;24,00;EUR;2,40;EUR;03.05.2023 22:05;17,33;EUR;abgerechnet;-
+27.04.2023;27.04.2023;Airbus SE Aandelen aan toonder EO 1;NL0000235190;938914;Ausschttung;-;10;18,00;EUR;1,80;EUR;27.04.2023 21:54;13,31;EUR;abgerechnet;-
+31.03.2023;04.04.2023;Global Payments Inc. Registered Shares o.N.;US37940X1028;603111;Ausschttung;-;3;0,75;USD;0,25;USD;03.04.2023 22:14;0,56;USD;abgerechnet;-
+30.12.2022;03.01.2023;Global Payments Inc. Registered Shares o.N.;US37940X1028;603111;Ausschttung;-;3;0,75;USD;0,25;USD;02.01.2023 21:54;0,57;USD;abgerechnet;-
+29.12.2022;02.01.2023;Tesla Inc. Registered Shares DL-,001;US88160R1014;A1CX3T;Kauf;Berlin;2;226,32;EUR;113,16;EUR;29.12.2022 15:39;239,09;EUR;abgerechnet;60364519
+25.03.2022;29.03.2022;Global Payments Inc. Registered Shares o.N.;US37940X1028;603111;Ausschttung;-;3;0,75;USD;0,25;USD;13.10.2022 17:08;0,56;USD;abgerechnet;-
+30.12.2021;03.01.2022;Global Payments Inc. Registered Shares o.N.;US37940X1028;603111;Ausschttung;-;3;0,75;USD;0,25;USD;13.10.2022 17:08;0,57;USD;abgerechnet;-
+21.04.2022;21.04.2022;Airbus SE Aandelen aan toonder EO 1;NL0000235190;938914;Ausschttung;-;10;15,00;EUR;1,50;EUR;13.10.2022 14:43;11,09;EUR;abgerechnet;-
+30.09.2022;04.10.2022;Global Payments Inc. Registered Shares o.N.;US37940X1028;603111;Ausschttung;-;3;0,75;USD;0,25;USD;03.10.2022 21:53;0,56;USD;abgerechnet;-
+24.06.2022;28.06.2022;Global Payments Inc. Registered Shares o.N.;US37940X1028;603111;Ausschttung;-;3;0,75;USD;0,25;USD;27.06.2022 21:51;0,57;USD;abgerechnet;-
+09.05.2022;09.05.2022;Allianz SE vink.Namens-Aktien o.N.;DE0008404005;840400;Ausschttung;-;28;302,40;EUR;10,80;EUR;06.05.2022 21:59;218,29;EUR;abgerechnet;-
+04.05.2022;04.05.2022;Bayer AG Namens-Aktien o.N.;DE000BAY0017;BAY001;Ausschttung;-;10;20,00;EUR;2,00;EUR;03.05.2022 22:37;14,45;EUR;abgerechnet;-
+09.09.2021;24.09.2021;Global Payments Inc. Registered Shares o.N.;US37940X1028;603111;Ausschttung;-;3;0,75;USD;0,25;USD;24.09.2021 11:33;0,55;USD;abgerechnet;-
+06.08.2021;10.08.2021;Allianz SE vink.Namens-Aktien o.N.;DE0008404005;840400;Kauf;Frankfurt;7;1.385,44;EUR;197,92;EUR;06.08.2021 16:55;1.399,63;EUR;abgerechnet;53583852
+20.07.2021;22.07.2021;Allianz SE vink.Namens-Aktien o.N.;DE0008404005;840400;Kauf;Dsseldorf;10;2.037,00;EUR;203,70;EUR;20.07.2021 16:28;2.047,73;EUR;abgerechnet;53334712
+16.07.2021;20.07.2021;Allianz SE vink.Namens-Aktien o.N.;DE0008404005;840400;Kauf;Mnchen;4;836,40;EUR;209,10;EUR;16.07.2021 17:37;840,78;EUR;abgerechnet;53263888
+10.06.2021;25.06.2021;Global Payments Inc. Registered Shares o.N.;US37940X1028;603111;Ausschttung;-;3;0,59;USD;0,195;USD;25.06.2021 11:32;0,43;USD;abgerechnet;-
+06.05.2021;10.05.2021;Allianz SE vink.Namens-Aktien o.N.;DE0008404005;840400;Ausschttung;-;7;67,20;EUR;9,60;EUR;10.05.2021 11:34;48,51;EUR;abgerechnet;-
+28.04.2021;30.04.2021;Bayer AG Namens-Aktien o.N.;DE000BAY0017;BAY001;Ausschttung;-;10;20,00;EUR;2,00;EUR;30.04.2021 11:33;14,43;EUR;abgerechnet;-
+11.03.2021;26.03.2021;Global Payments Inc. Registered Shares o.N.;US37940X1028;603111;Ausschttung;-;3;0,59;USD;0,195;USD;26.03.2021 11:32;0,45;USD;abgerechnet;-
+16.12.2020;31.12.2020;Global Payments Inc. Registered Shares o.N.;US37940X1028;603111;Ausschttung;-;3;0,59;USD;0,195;USD;31.12.2020 11:31;0,44;USD;abgerechnet;-
+09.09.2020;24.09.2020;Global Payments Inc. Registered Shares o.N.;US37940X1028;603111;Ausschttung;-;3;0,59;USD;0,195;USD;24.09.2020 11:33;0,45;USD;abgerechnet;-
+11.06.2020;26.06.2020;Global Payments Inc. Registered Shares o.N.;US37940X1028;603111;Ausschttung;-;3;0,59;USD;0,195;USD;26.06.2020 11:31;0,43;USD;abgerechnet;-
+28.05.2020;01.06.2020;Mercedes-Benz Group AG Namens-Aktien o.N.;DE0007100000;710000;Verkauf;Hamburg;10;351,30;EUR;35,13;EUR;28.05.2020 11:26;335,24;EUR;abgerechnet;46808116
+15.05.2020;19.05.2020;Allianz SE vink.Namens-Aktien o.N.;DE0008404005;840400;Kauf;Mnchen;3;435,12;EUR;145,04;EUR;15.05.2020 11:03;448,49;EUR;abgerechnet;46633310
+15.05.2020;19.05.2020;Boeing Co. Registered Shares DL 5;US0970231058;850471;Kauf;Berlin;4;458,80;EUR;114,70;EUR;15.05.2020 10:20;471,57;EUR;abgerechnet;46632558
+07.05.2020;11.05.2020;Allianz SE vink.Namens-Aktien o.N.;DE0008404005;840400;Ausschttung;-;4;38,40;EUR;9,60;EUR;11.05.2020 11:36;27,71;EUR;abgerechnet;-
