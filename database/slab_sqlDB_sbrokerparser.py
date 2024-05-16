@@ -4,10 +4,10 @@ import json
 import os
 import shutil
 
-import db_factory
-
 from datetime import datetime
 from unidecode import unidecode
+
+import slab_sqlDB_operations
 
 class SbrokerParser:
 
@@ -194,8 +194,11 @@ class SbrokerParser:
     def __moveToArchive__(self):
         if not os.path.exists("archive_sbroker"):
             os.makedirs("archive_sbroker")
-        shutil.move(self.file_name, "archive_sbroker")
-        shutil.move(self.file_name_prepared, "archive_sbroker")
+        try:
+            shutil.move(self.file_name, "archive_sbroker")
+            shutil.move(self.file_name_prepared, "archive_sbroker")
+        except Exception as e:
+            print("file already exists.")
         pass
 
 
@@ -210,8 +213,8 @@ class SbrokerParser:
         # if not, create a tabel named with the isin as a unique identifier with no
         # speciak characters and whitspaces
         table_name = input_row_data[3]
-        if input_database.doesTableExist(table_name) == db_factory.StateCMD.SUCCESS_CMD_FALSE:
-            if input_database.createTable("company_isin", table_name) != db_factory.StateCMD.SUCCESS_CMD_TRUE:
+        if input_database.doesTableExist(table_name) == slab_sqlDB_operations.StateCMD.SUCCESS_CMD_FALSE:
+            if input_database.createTable("company_isin", table_name) != slab_sqlDB_operations.StateCMD.SUCCESS_CMD_TRUE:
                 return
         # update isin tables
         # inserting following data into the table:
@@ -228,7 +231,7 @@ class SbrokerParser:
     def __updateSlabstockStockIsinSell__(self, input_database, input_row_data):
         table_name = input_row_data[3]
         input_row_index_number = 7
-        if input_database.getTableRowsSortedByTradeDateAscending(table_name) == db_factory.StateCMD.SUCCESS_CMD_TRUE:
+        if input_database.getTableRowsSortedByTradeDateAscending(table_name) == slab_sqlDB_operations.StateCMD.SUCCESS_CMD_TRUE:
             index = 0
             orderd_result = input_database.getLastDBActionResult()[0]
             row = orderd_result[index]
@@ -309,7 +312,7 @@ class SbrokerParser:
     
     def updateSlabstockDatabase(self):
         #row_index = 1  # Index of the row you want to extract (zero-based index)
-        with contextlib.closing(db_factory.DBSlabstockFactory("slabstock_db_config.json")) as db_program:
+        with contextlib.closing(slab_sqlDB_operations.SqlOperations("slabstock_db_config.json")) as db_program:
 
             for index in enumerate(reversed(self.csv_data_list)):
                 index_reversed = len(self.csv_data_list) - index[0] -1
@@ -330,30 +333,13 @@ class SbrokerParser:
 
 
     def printRows(self, table_name):
-        with contextlib.closing(db_factory.DBSlabstockFactory("slabstock_db_config.json")) as db_program:
+        with contextlib.closing(slab_sqlDB_operations.SqlOperations("slabstock_db_config.json")) as db_program:
             db_program.getTableRowsSortedByTradeDateAscending(table_name)
             result = db_program.getLastDBActionResult()
             for row in result[0]:
                 print(row)
                 print('\n')
 
-
-
-os.system('clear')
-
-with contextlib.closing(db_factory.DBSlabstockFactory("slabstock_db_config.json")) as program: 
-    program.removeTable("US88160R1014")
-    program.removeTable("US0970231058")
-    program.removeTable("DE0008404005")
-    program.removeTable("transactions")
-    program.createTable("transactions")
-
-#file = "Transaktionsuebersicht_zu_Depot_7173642002_vom_20240407_1303.csv"
-
-#sbroker = SbrokerParser()
-
-with contextlib.closing(SbrokerParser()) as program:
-    program.updateSlabstockDatabase()
 
 
     

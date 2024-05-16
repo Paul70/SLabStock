@@ -1,4 +1,4 @@
-class DBCommand:
+class SqlCommand:
 
     # all methods require as input 
     # - the database table name we want to modify
@@ -14,6 +14,12 @@ class DBCommand:
 
     # todo 
     # const variablen fuer die indices anlegen
+
+    @staticmethod
+    def showMariaDBTables():
+        mariadb_cmd = f"SHOW TABLES;"
+        return mariadb_cmd
+
 
     @staticmethod
     def createMariaDBTable(input_table_name, input_table_columns_definition):
@@ -37,10 +43,12 @@ class DBCommand:
             mariadb_cmd = f"CREATE TABLE {input_table_name} ({column_def_str});"
         return mariadb_cmd
     
+    
     @staticmethod
     def removeMariaDBTable(input_table_name):
         mariadb_cmd = f"DROP TABLE {input_table_name};"
         return mariadb_cmd
+
 
     @staticmethod 
     def selcetExistMariaDBTable(input_database_name, input_table_name):
@@ -53,21 +61,25 @@ class DBCommand:
         mariadb_cmd = f"SELECT COUNT(*) FROM {input_table_name} WHERE {input_column} = '{input_value}'"
         return mariadb_cmd
     
+
     @staticmethod
     def selectAllMariaDBTable(input_table_name):
         mariadb_cmd = f"SELECT * FROM {input_table_name}"
         return mariadb_cmd
+    
     
     @staticmethod
     def selectAllOrderedAscendingMariaDBTable(input_table_name, input_column_name):
         mariadb_cmd = f"SELECT * FROM {input_table_name} ORDER BY {input_column_name} ASC;"
         return mariadb_cmd
     
+
     @staticmethod
     def selectAllOrderedDescendingMariaDBTable(input_table_name, input_column_name):
         mariadb_cmd = f"SELECT * FROM {input_table_name} ORDER BY {input_column_name} DESC;"
         return mariadb_cmd
     
+
     @staticmethod
     def insertDataIntoMariaDBTable(input_table_name, input_table_columns_definition, input_data):
         column_str = ""
@@ -105,11 +117,13 @@ class DBCommand:
         mariadb_cmd = f"INSERT INTO {input_table_name} ({column_str}) VALUES ({value_str});"
         return mariadb_cmd
     
+
     @staticmethod
     def updateSingleValueMariaDBTable(input_table_name, input_column, input_value, input_condition):
         mariadb_cmd = f"UPDATE {input_table_name} SET {input_column} = '{input_value}' WHERE id = {input_condition};"
         return mariadb_cmd
     
+
     @staticmethod
     def deleteRowFromMariaDBTable(input_table_name, input_condition):
         mariadb_cmd = f"DELETE FROM {input_table_name} WHERE id={input_condition};"

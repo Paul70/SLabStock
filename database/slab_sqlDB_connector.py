@@ -1,6 +1,6 @@
 import mysql.connector
 
-class DBConnector:
+class SqlConnector:
     def __init__(self):
         self.db_name = "slabstock_test"
         self.db_user = "test_user"

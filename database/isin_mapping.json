@@ -1,0 +1,36 @@
+{
+    "name": "isin_map",
+    "description": "Mapping of ISIN numbers to resolve a companie's name, TA-key and if we currently hold stocks from this company",
+    "map": [
+        {
+            "isin": "DE0008404005", 
+            "company": "Allianz SE vink.Namens-Aktien o.N.",
+            "ta-key": "ALV.DE",
+            "holdings": true
+        },
+        {
+            "isin": "DE000BAY0017", 
+            "company": "Bayer AG Namens-Aktien o.N.",
+            "ta-key": "BAYN.DE",
+            "holdings": true
+        },
+        {
+            "isin": "NL0000235190", 
+            "company": "Airbus SE Aandelen aan toonder EO 1",
+            "ta-key": "AIR.PA",
+            "holdings": true
+        },
+        {
+            "isin": "US0970231058", 
+            "company": "Boeing Co. Registered Shares DL 5",
+            "ta-key": "BA",
+            "holdings": true
+        },
+        {
+            "isin": "US37940X1028", 
+            "company": "Global Payments Inc. Registered Shares o.N.",
+            "ta-key": "GPN",
+            "holdings": true
+        }
+    ]
+}

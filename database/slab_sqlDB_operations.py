@@ -2,8 +2,8 @@ import contextlib
 import json
 import os
 
-import db_command
-import db_connector
+import slab_sqlDB_command
+import slab_sqlDB_connector
 
 from enum import Enum
 
@@ -20,7 +20,7 @@ class StateCMD(Enum):
 
 
 # ist ein DataBaseConfigurator
-class DBSlabstockFactory:
+class SqlOperations:
 
     @staticmethod 
     def checkConfigurationFileType(table_config):
@@ -74,19 +74,7 @@ class DBSlabstockFactory:
                     print("In 'column_definiton', required entry 'auto' not found in the JSON data.")
                     return False
 
-        return True
-    
-        
-
-
-
-            
-    
-
-    
-    
-
-        
+        return True        
     
 
 
@@ -97,7 +85,7 @@ class DBSlabstockFactory:
         self.SQL_error = []
         self.state = StateCMD.NOT_SET
 
-        self.conntector = db_connector.DBConnector()
+        self.connector = slab_sqlDB_connector.SqlConnector()
 
         if not self.checkConfigurationFileType(table_config):
             return
@@ -135,7 +123,6 @@ class DBSlabstockFactory:
 
 
 
-
     def __executeAndCheckSQLFetchOne__(self, cmd):
         self.SQL_result.clear()
         self.SQL_error.clear()
@@ -143,7 +130,7 @@ class DBSlabstockFactory:
         if self.state != StateCMD.SUCCESS_PREPARE:
             return
         
-        self.conntector.executeCommandFetchOne(cmd, self.SQL_result, self.SQL_error)
+        self.connector.executeCommandFetchOne(cmd, self.SQL_result, self.SQL_error)
 
         if self.SQL_error:
             self.__advanceState__(False)
@@ -168,7 +155,7 @@ class DBSlabstockFactory:
         if self.state != StateCMD.SUCCESS_PREPARE:
             return
         
-        self.conntector.executeCommandFetchAll(cmd, self.SQL_result, self.SQL_error)
+        self.connector.executeCommandFetchAll(cmd, self.SQL_result, self.SQL_error)
 
         if self.SQL_error:
             self.__advanceState__(False)
@@ -231,16 +218,11 @@ class DBSlabstockFactory:
                   + str(number_of_cols - number_of_auto_cols) + ", data size:" + str(len(input_data_array)))
             self.state = StateCMD.ERROR_PREPARE
             return False
-        
     
-    
-        
-
-
 
 
     def close(self):
-        self.conntector.close()
+        self.connector.close()
         self.db_config_file.close()
         pass
 
@@ -267,7 +249,7 @@ class DBSlabstockFactory:
             input_table_name = input_table_config_name
 
         table_config = (self.__extractTableConfig__(input_table_config_name))["config_cols"]
-        cmd = db_command.DBCommand.createMariaDBTable(input_table_name, table_config)
+        cmd = slab_sqlDB_command.SqlCommand.createMariaDBTable(input_table_name, table_config)
         self.__advanceState__(True)
 
         # execute sql cmd
@@ -301,7 +283,7 @@ class DBSlabstockFactory:
             return self.state
         self.__advanceState__()
     
-        cmd = db_command.DBCommand.removeMariaDBTable(input_table_name)
+        cmd = slab_sqlDB_command.SqlCommand.removeMariaDBTable(input_table_name)
         self.__advanceState__(True)
 
         print("--Removing table '" + input_table_name + "' from database'" + self.db_config_dict["name"] + "'")
@@ -313,13 +295,39 @@ class DBSlabstockFactory:
             self.__advanceState__(True)
             
         return self.state
+    
+
+    def getListOfTables(self, list = []):
+        self.__advanceState__()
+        if not self.db_config_dict:
+            print("Error: No database configuratio.")
+            self.__advanceState__(False)
+            return self.state
+        else:
+            cmd = slab_sqlDB_command.SqlCommand.showMariaDBTables()
+            self.__advanceState__(True)
+
+            print("--Show database tables:")
+            print("\tMariadb command:\n\t" + "'" + cmd + "'")
+
+            self.__executeAndCheckSQLFetchAll__(cmd)
+            if self.state == StateCMD.SUCCESS_SQL:
+                for row in self.SQL_result[0]:
+                    list.append(row[0])
+                self.__advanceState__(True)
+            else:
+                self.__advanceState__(False)
+                    
+        return self.state
+
+
         
 
     
     def doesTableExist(self, input_table_name):
         self.__advanceState__()
 
-        cmd = db_command.DBCommand.selcetExistMariaDBTable(self.db_config_dict["name"], input_table_name)
+        cmd = slab_sqlDB_command.SqlCommand.selcetExistMariaDBTable(self.db_config_dict["name"], input_table_name)
         self.__advanceState__(True)
         
         print("--Checking if'" + input_table_name + "' for database' " + self.db_config_dict["name"] + "' already exists.")
@@ -348,7 +356,7 @@ class DBSlabstockFactory:
             return self.state
         self.__advanceState__()
         
-        cmd = db_command.DBCommand.selectAllMariaDBTable(input_table_name)
+        cmd = slab_sqlDB_command.SqlCommand.selectAllMariaDBTable(input_table_name)
         self.__advanceState__(True)
         print("--Checking if'" + input_table_name + " is empty.")
         print("\tMariadb command:\n\t" + "'" + cmd + "'")
@@ -367,7 +375,7 @@ class DBSlabstockFactory:
     def doesValueExistInTable(self, input_table_name, input_table_col, input_value):
         self.__advanceState__()
 
-        cmd = db_command.DBCommand.checkValueExistenceInMariaDBTable(input_table_name, input_table_col, input_value)
+        cmd = slab_sqlDB_command.SqlCommand.checkValueExistenceInMariaDBTable(input_table_name, input_table_col, input_value)
         self.__advanceState__(True)
 
         print("--Checking if value exists in table.")
@@ -393,7 +401,7 @@ class DBSlabstockFactory:
             return self.state
         self.__advanceState__()
 
-        cmd = db_command.DBCommand.selectAllMariaDBTable(input_table_name)
+        cmd = slab_sqlDB_command.SqlCommand.selectAllMariaDBTable(input_table_name)
         self.__advanceState__(True)
 
         print("--Query table data.")
@@ -412,7 +420,7 @@ class DBSlabstockFactory:
             return self.state
         self.__advanceState__()
 
-        cmd = db_command.DBCommand.selectAllOrderedAscendingMariaDBTable(input_table_name, "trade_date")
+        cmd = slab_sqlDB_command.SqlCommand.selectAllOrderedAscendingMariaDBTable(input_table_name, "trade_date")
         self.__advanceState__(True)
 
         print("--Query table data.")
@@ -465,7 +473,7 @@ class DBSlabstockFactory:
         self.__advanceState__()
 
         # all referenced values exist, insert data row
-        cmd = db_command.DBCommand.insertDataIntoMariaDBTable(input_table_name, table_config, input_data)
+        cmd = slab_sqlDB_command.SqlCommand.insertDataIntoMariaDBTable(input_table_name, table_config, input_data)
         self.__advanceState__(True)
 
         print("--Inserting data into table '" + input_table_name + "' for database' " + self.db_config_dict["name"] + "'")
@@ -486,7 +494,7 @@ class DBSlabstockFactory:
             return self.state
         self.__advanceState__()
 
-        cmd = db_command.DBCommand.deleteRowFromMariaDBTable(input_table_name, input_condition)
+        cmd = slab_sqlDB_command.SqlCommand.deleteRowFromMariaDBTable(input_table_name, input_condition)
         self.__advanceState__(True)
 
         print("--Delete table row.")
@@ -504,7 +512,7 @@ class DBSlabstockFactory:
             return self.state
         self.__advanceState__()
 
-        cmd = db_command.DBCommand.updateSingleValueMariaDBTable(input_table_name, input_column, input_value, input_condition)
+        cmd = slab_sqlDB_command.SqlCommand.updateSingleValueMariaDBTable(input_table_name, input_column, input_value, input_condition)
         self.__advanceState__(True)
 
         print("--Update table row.")
