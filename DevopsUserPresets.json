@@ -1,0 +1,26 @@
+{
+    "settings_ide": {
+        "name": "GCC-13.1.0-Debug-qtcreator",
+        "settings_display_name": "GCC-13.1.0-Debug", 
+        "theme": "dark",
+        "font_size": 9
+    },
+    "settings_compiler":  {
+        "name": "gcc",
+        "version": "13.1.0",
+        "major": 13,
+        "minor": 1,
+        "cppstd": "gnu17",
+        "libcxx": "libstdc++11",
+        "path": "/opt/gcc-13.1.0-build/bin/"
+    },
+    "settings_build": {
+        "directory": "./build",
+        "build_type": "Debug",
+        "parallel_builds": 16
+    },
+    "settings_conan": {
+        "name": "devops_conan_profile",
+        "include_profile": "default"
+    }
+}

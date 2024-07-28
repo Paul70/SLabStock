@@ -1,0 +1,45 @@
+{
+    "label": "devops-user-settings-profile",
+    "os": "Linux",
+    "cmakeUserPresets": {
+        "configurePresets": [
+            {
+                "name": "GCC-13.1.0-Debug-qtcreator",
+                "displayName": "GCC-13.1.0-Debug",
+                "description": "User and platform specific project settings and configuration.",
+                "cmakeExecutable": "/home/paul/.conan2/p/cmake857e6d21f32d2/p/bin/cmake",
+                "inherits": "conan-debug",
+                "cacheVariables": {
+                    "CMAKE_CXX_COMPILER": "/opt/gcc-13.1.0-build/bin/g++",
+                    "CMAKE_CXX_COMPILER_AR": "/opt/gcc-13.1.0-build/bin/gcc-ar",
+                    "CMAKE_CXX_COMPILER_RANLIB": "/opt/gcc-13.1.0-build/bin/gcc-ranlib",
+                    "CMAKE_C_COMPILER": "/opt/gcc-13.1.0-build/bin/gcc",
+                    "CMAKE_C_COMPILER_AR": "/opt/gcc-13.1.0-build/bin/gcc-ar",
+                    "CMAKE_C_COMPILER_RANLIB": "/opt/gcc-13.1.0-build/bin/gcc-ranlib"
+                }
+            }
+        ],
+        "buildPresets": [
+            {
+                "name": "GCC-13.1.0-Debug-qtcreator",
+                "configurePreset": "GCC-13.1.0-Debug-qtcreator",
+                "jobs": 16
+            }
+        ]
+    },
+    "conanProfile": {
+        "name": "devops_conan_profile",
+        "include": "default",
+        "settings": {
+            "build_type": "Debug",
+            "compiler": "gcc",
+            "compiler.cppstd": "gnu17",
+            "compiler.libcxx": "libstdc++11",
+            "compiler.version": 13
+        },
+        "conf": {
+            "tools.build:jobs": 16,
+            "tools.build:compiler_executables": "{'c': '/opt/gcc-13.1.0-build/bin/gcc', 'cpp': '/opt/gcc-13.1.0-build/bin/g++'}"
+        }
+    }
+}

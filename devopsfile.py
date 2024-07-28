@@ -1,83 +1,46 @@
 #! /usr/bin/python3
-import sys
-import subprocess
+from pathlib import Path
+
+from devops.config_management.devops_file import DevopsFile
+from devops.config_management.main import main
+
+"""SLabstock project automation tool based on devops module."""
+
+# global root path vairable
+PROJECT_ROOT = Path(
+    __file__).parent.absolute() # absolute is required, because debian and ubuntu defaults are different
 
 
-class SLabStockDevOpsRecipe():
+class SlabstockDevopsFile(DevopsFile):
+    project_root = str(PROJECT_ROOT)
+    conan_profile_path = str(PROJECT_ROOT) + "/conanprofile"
 
-    # DevOps setup main data
-    name = "slabstock-devops"
-    version = "0.1.0"
-    git_tag = "xyz"
-    options = {
-        "slabstock-profile":[None,
-                            "default-debug-config.json",
-                            "default-release-config.json", 
-                            "gcc-131-debug-config.json",
-                            "gcc-131-release-config.json"],
-        "os": [None, "Ubuntu", "Windows"],
-        "ide": [None, "qtcreator"]
-    }
-    default_options = {
-        "slabstock-profile": "default-debug-config.json",
-        "os": "Ubuntu",
-        "ide": "qtcreator"
-    }
 
-    # DevOps setup metadata
-    author = "Paul Heidenreich"
-    decription = "Settings configuration toolchain recipe file."
-
-    def configure(self):
-        self.options["devops-profile"] = ["gcc-131-debug-config.json"]
-        self.options["os"] = ["Ubuntu"]
-        self.options["ide"] = ["qtcreator"]
+    def function_of_Slabtock(self):
+        print("This is the funciton function_of_Slabtock")
         pass
 
-
-    # Check if the specified devops profile fits for this host operating system.
-    def checkProfile(self):
-        if self.options["devops-profile"]:
-            #return Settings.check(self.name, self.options["devops-profile"], self.os_list)
-            return False
-        else:
-            return True
-            #return Settings.check(self.name, self.default_options["devops-profile"], self.os_list)
-        pass
 
     # Generate configurations for porject
-    def generate(self):
+    def bootstrap(self):
+        print(PROJECT_ROOT)
+        print("This is the derived class bootstrap method.")
+        print("Hier ist Paul")
+        pass
 
-        self.configure()
-
-        if len(self.options["devops-profile"]) > 1:
-            self.options["devops-profile"] = self.default_options["devops-profile"]
-
-        script = [
-            "./devops/command.py --bootstrap --name "+ self.name + " --profile " + self.options["devops-profile"][0]
-        ]
-        print(script[0])
-        for cmd in script:
-            subprocess.run([cmd], shell = True, capture_output = False, text = False)
+    def prepare(self):
+        self.create_conan_profile()
+        self.conan_install()
+        self.create_cmake_user_presets()
         pass
 
     def build(self):
-        print("This will be the build method call ...")
-        print("Calling conan create command will happen here ...")
+        print("This is the derived class build method.")
+        pass
 
 
 
-###################################################################################################
-dev = SLabStockDevOpsRecipe()
-def generate():
-    dev.generate()
-def build():
-    dev.build()
+################################################################################################### 
 
-
-# args[0]  = current file
-# args[1]  = function name
-# args[2:] = function args : (*unpacked)
-if __name__ == "__main__":
-    args = sys.argv
-    globals()[args[1]](*args[2:])
+if __name__ == '__main__':
+    main()

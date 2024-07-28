@@ -1,6 +1,8 @@
 # ignored folders
-/build
 /.vscode
+/extra/knowledge
+/build
+/__pycache__
 
 # ignored files
 CMakeUserPresets.json

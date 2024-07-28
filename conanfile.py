@@ -4,7 +4,7 @@ import sys
 
 required_conan_version = ">=2.0.0"
 
-class LibdRecipe(ConanFile):
+class SlabstockConanFile(ConanFile):
 
     # Package binray configuration and metadata
     # Settings: project-wide configuration that cannot be defaulted in recipes
@@ -12,7 +12,7 @@ class LibdRecipe(ConanFile):
     # Options:  package-specific configurations which can be defaulted in recipes (no operating 
     #           related settings)
     name = "slabstock"
-    version = "0.1.0"
+    version = "0.0.1"
     package_type = "shared-library"
     author = "Paul Heidenreich"
     description = "SLabStock - Simulation Laboratory for Stock evaluation and prediction"
@@ -32,8 +32,9 @@ class LibdRecipe(ConanFile):
     # Requirements for build (tool_requires) and host (requires) context 
     def requirements(self):
         self.requires("gtest/1.14.0")
-        self.requires("zlib/1.2.11")
+        self.requires("mariadb-connector-c/3.3.3")
         self.requires("neargye-semver/0.3.0")
+        self.requires("zlib/1.2.11")
         pass
 
     def build_requirements(self):
@@ -78,7 +79,6 @@ class LibdRecipe(ConanFile):
         self.cpp_info.libs = [
             "dutil"
         ]
-
         pass
 
 

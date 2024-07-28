@@ -533,9 +533,9 @@ class SqlOperations:
 #  next step das hier aus dem csv holen
 # sbroker_data = ["sbroker","2024-04-18", "2024-04-21", "Allianz", "US1234567890", "Buy", "Stock Exchange", 10, 500.00, "USD", 50.00, "USD", "2024-04-18 10:00:00", 5000.00, "USD", "executed", "12345"]
 
-# os.system('clear')
+os.system('clear')
 
-# with contextlib.closing(DBSlabstockFactory("slabstock_db_config.json")) as db_program:
+#with contextlib.closing(DBSlabstockFactory("slabstock_db_config.json")) as db_program:
 
 #     # create depots tabel and insert row
 #     table_depots = "depots"

@@ -1,10 +1,13 @@
 message(STATUS "SLabStock CMakeLists.txt: configuring subdirectory ${S_TESTS}")
 
 set(libd_tests_HEADERS
+    libslabstock/database/mocks/mariadbconnectormocks.h
     testbase.h
 )
 set(slabstock_tests_SOURCES
-    libslabstock/simulationtests.cpp
+    libslabstock/database/dbconnectortests.cpp
+    libslabstock/database/mocks/mariadbconnectormocks.cpp
+    libslabstock/simulation/simulationtests.cpp
     main.cpp
     simpy_examples/simpyexample1_car.cpp
     simpy_examples/simpyexample2_realtimecar.cpp

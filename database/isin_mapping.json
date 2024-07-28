@@ -31,6 +31,126 @@
             "company": "Global Payments Inc. Registered Shares o.N.",
             "ta-key": "GPN",
             "holdings": true
+        },
+        {
+            "isin": "US00724F1012", 
+            "company": "Adobe Inc.",
+            "ta-key": "ADBE",
+            "holdings": false
+        },
+        {
+            "isin": "FR0000120073", 
+            "company": "Air Liquide S.A.",
+            "ta-key": "AI.PA",
+            "holdings": false
+        },
+        {
+            "isin": "US00971T1016", 
+            "company": "Akamai Technologies Inc",
+            "ta-key": "AK3.HA",
+            "holdings": false
+        },
+        {
+            "isin": "US1104481072", 
+            "company": "British American Tobacco Aktie",
+            "ta-key": "BTI",
+            "holdings": false
+        },
+        {
+            "isin": "US22160K1051", 
+            "company": "Costco Wholesale Corporation",
+            "ta-key": "COST",
+            "holdings": false
+        },
+        {
+            "isin": "US3119001044", 
+            "company": "Fastenal Company",
+            "ta-key": "FAST",
+            "holdings": false
+        },
+        {
+            "isin": "US4612021034", 
+            "company": "Intuit Inc.",
+            "ta-key": "INTU",
+            "holdings": false
+        },
+        {
+            "isin": "US46120E623", 
+            "company": "Intuitive Surgical Inc.",
+            "ta-key": "ISRG",
+            "holdings": false
+        },
+        {
+            "isin": "FR0000120321", 
+            "company": "L'Oréal S.A.",
+            "ta-key": "OR.PA",
+            "holdings": false
+        },
+        {
+            "isin": "IE000S9YS762", 
+            "company": "Linde plc",
+            "ta-key": "LIN",
+            "holdings": false
+        },
+        {
+            "isin": "FR0000121014", 
+            "company": "LVMH Moët Hennessy - Louis Vuitton, Société Européenne",
+            "ta-key": "MC.PA",
+            "holdings": false
+        },
+        {
+            "isin": "US5949181045", 
+            "company": "Microsoft Corporation",
+            "ta-key": "MSFT",
+            "holdings": false
+        },
+        {
+            "isin": "US61174X1090", 
+            "company": "Monster Beverage Corporation",
+            "ta-key": "MNST",
+            "holdings": false
+        },
+        {
+            "isin": "US6974351057", 
+            "company": "Palo Alto Networks, Inc.",
+            "ta-key": "PANW",
+            "holdings": false
+        },
+        {
+            "isin": "US78409V1044", 
+            "company": "S&P Global Inc.",
+            "ta-key": "SPGI",
+            "holdings": false
+        },
+        {
+            "isin": "DE000TLX1005", 
+            "company": "Talanx AG",
+            "ta-key": "TLX.DE",
+            "holdings": false
+        },
+        {
+            "isin": "US1912161007", 
+            "company": "The Coca-Cola Company",
+            "ta-key": "KO",
+            "holdings": false
+        },
+        {
+            "isin": "US9078181081", 
+            "company": "Union Pacific Corporation",
+            "ta-key": "UNP",
+            "holdings": false
+        },
+        {
+            "isin": "US92826C8394", 
+            "company": "Visa Inc.",
+            "ta-key": "V",
+            "holdings": false
+        },
+        {
+            "isin": "US94106L1098", 
+            "company": "Waste Management, Inc.",
+            "ta-key": "MW",
+            "holdings": false
         }
     ]
 }

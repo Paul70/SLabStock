@@ -1,11 +1,14 @@
 message(STATUS "libslabstock CMakeLists.txt: configuring subdirectory ${S_LIB_SLABSTOCK}")
 
-find_package(ZLIB REQUIRED)
+find_package(mariadb-connector-c CONFIG REQUIRED)
+find_package(ZLIB CONFIG REQUIRED)
 find_package(Qt5 REQUIRED COMPONENTS
     Core
 )
 
 set(slabstock_HEADERS
+    application/stockcrawler.h
+    database/connector.h
     simulation/callback.h
     simulation/clearsimulationcallback.h
     simulation/dummyprocess.h
@@ -26,6 +29,8 @@ set(slabstock_HEADERS
     utility/basictypes.h
 )
 set(slabstock_SOURCES
+    application/stockcrawler.cpp
+    database/connector.cpp
     simulation/callback.cpp
     simulation/clearsimulationcallback.cpp
     simulation/dummyprocess.cpp
@@ -59,6 +64,8 @@ target_link_libraries(slabstock
     PUBLIC
     dglobals
     dutil
+    mariadb-connector-c::mariadb-connector-c
+    mariadbcpp
     ZLIB::ZLIB
     Qt5::Core
 )
