@@ -1,10 +1,13 @@
 # ignored folders
-/.vscode
 /extra/knowledge
 /build
 /__pycache__
+/.vscode
+*/__pycache__
+*/.pytest_cache
 
 # ignored files
-CMakeUserPresets.json
-CMakeLists.txt.user
-ProjectUserConfig.json
+*.env
+*CMakeUserPresets.json
+*CMakeLists.txt.user
+*ProjectUserConfig.json
