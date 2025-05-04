@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package CpyTa.protobuf;
+
+message Notification {
+  string text_message = 1;
+}

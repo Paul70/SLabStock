@@ -24,14 +24,16 @@ include(SLabStockConfigureBuildPaths)
 # Intermediate solution until there is a libd conan package
 # aktuell werden die ganzen settings von libd verwendet, das muss dann auch noch umgestellt werden.
 message(STATUS "SLabStock CMakeLists.txt: loading CMake modules from: ${CMAKE_SOURCE_DIR}/libd/CMakeModules")
-include(${CMAKE_SOURCE_DIR}/libd/CMakeModules/HelperFunctions.cmake)
-include(${CMAKE_SOURCE_DIR}/libd/CMakeModules/LibdDefaultConfig.cmake)
-include(${CMAKE_SOURCE_DIR}/libd/CMakeModules/ConfigureBuildPaths.cmake)
+include(${CMAKE_SOURCE_DIR}/libd/CMakeModules/LibdConfig.cmake)
+include(${CMAKE_SOURCE_DIR}/libd/CMakeModules/LibdToolchainConfig.cmake)
 
 message(STATUS "SLabStock CMakeLists.txt: configuring subdirectory ${S_LIBD}")
 add_subdirectory(libd)
 add_subdirectory(libslabstock)
+add_subdirectory(libcpymail)
+add_subdirectory(cpyTa)
 
 if(O_BUILD_SLABSTOCK_TESTS)
     add_subdirectory(tests)
 endif()
+

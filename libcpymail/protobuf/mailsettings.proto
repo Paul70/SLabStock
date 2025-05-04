@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package cpymail.protobuf;
+
+message Attachment {
+  string filename = 1;
+  string file_path = 2;
+}
+
+message MailSettings {
+  repeated string to_addresses = 1;
+  repeated string cc_addresses = 2;
+  repeated string bcc_addresses = 3;
+  string subject = 4;
+  string message = 5;
+  repeated Attachment attachments = 6;
+}
+
+message RequestResult{
+  int32 status_code = 1;
+  string status_msg = 2;
+}

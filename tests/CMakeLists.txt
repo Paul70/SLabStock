@@ -5,6 +5,7 @@ set(libd_tests_HEADERS
     testbase.h
 )
 set(slabstock_tests_SOURCES
+    integration/stockcrawlertests.cpp
     libslabstock/database/dbconnectortests.cpp
     libslabstock/database/mocks/mariadbconnectormocks.cpp
     libslabstock/simulation/simulationtests.cpp

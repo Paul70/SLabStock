@@ -69,28 +69,36 @@ SimulationBase::SimulationBase(DUTIL::ConstructionData const& cd,
 {
 
   // create a unique simulation id
-  if (id_.value().empty()) {
+  if (id_.value().empty())
+  {
     std::ostringstream stream;
     stream << this;
     id_ = stream.str();
   }
-  if (!ckeckId(id_)) {
+  if (!ckeckId(id_))
+  {
     D_THROW("Simulation Id '" + id_.value() + "' already in use and not unique.");
-  } else {
+  }
+  else
+  {
     simulations_.emplace_back(id_);
   }
 
   // build subobject SimTicker
   auto eventticker = getConstructionValidator().buildSubobject<SimulationBase::EventTicker>(cd);
-  if (eventticker) {
+  if (eventticker)
+  {
     ticker_ = std::move(eventticker);
-  } else {
+  }
+  else
+  {
     ticker_ = std::make_unique<Ticker>();
   }
 
   // build event subobjects
   auto eventlist = getConstructionValidator().buildSubobjectList<SimulationBase::EventList>(cd);
-  for (auto&& event : eventlist) {
+  for (auto&& event : eventlist)
+  {
     event->setLoggingSink(this->getLoggingSink());
     eventMap_.emplace(event->getId(), std::move(event));
   }
@@ -102,7 +110,8 @@ SimulationBase::SimulationBase(DUTIL::ConstructionData const& cd,
   // - 2. col: event priority
   // - 3. col: event tick
   auto rows = cd.ds.getRows();
-  for (auto row = 0; row < rows; ++row) {
+  for (auto row = 0; row < rows; ++row)
+  {
     auto values = cd.ds.getValues<Ticker::Tick>();
     schedule(values[0], Priority(values[1]), values[2]);
   }
@@ -152,7 +161,8 @@ DUTIL::Ticker::Tick SimulationBase::peekNext() const
 
 TIME::basic_sec_t SimulationBase::peekNextTime(TIME::UnitPrefix prefix) const
 {
-  switch (prefix) {
+  switch (prefix)
+  {
     case TIME::UnitPrefix::NANO:
       return static_cast<TIME::basic_sec_t>((ticker_->getResolution_s() * peekNext())
                                             * TIME::oneByNano);
@@ -189,7 +199,8 @@ DUTIL::Ticker::Tick SimulationBase::peekLast() const
 
 std::int64_t SimulationBase::peekNextEvent() const
 {
-  if (eventQueue_.empty()) {
+  if (eventQueue_.empty())
+  {
     return -1;
   }
   return eventQueue_.cbegin()->second;
@@ -215,10 +226,12 @@ void SimulationBase::schedule(const Event::Id id, const Priority priority, const
 
 void SimulationBase::clearQueue()
 {
-  for (auto iter = eventQueue_.begin(); iter != eventQueue_.end();) {
+  for (auto iter = eventQueue_.begin(); iter != eventQueue_.end();)
+  {
     if (iter->first.first <= ticker_->now())
       ++iter;
-    else {
+    else
+    {
       auto eventId = iter->second;
       debug("Removing upcoming event id " + Utility::toString(eventId) + " '"
             + getEvent(eventId).getDescription() + "' scheduled at "
@@ -245,7 +258,8 @@ void SimulationBase::runUntilLastEvent()
 
 Event::Id SimulationBase::getUnusedEventId() const
 {
-  if (eventMap_.empty()) {
+  if (eventMap_.empty())
+  {
     return 0;
   }
   return ((--eventMap_.cend())->first) + 1;
@@ -279,7 +293,8 @@ Event::Id SimulationBase::step()
   // log message
 
   // call each callback registered for the current event
-  for (auto& cb : event.takeCallbacks()) {
+  for (auto& cb : event.takeCallbacks())
+  {
     // log message
 
     (*cb)(*this, event);
@@ -297,9 +312,11 @@ void SimulationBase::logEventMap(LoggingSink::LogSeverity level, std::string_vie
   this->log("List of curretntly mapped simulation events:", level);
   std::string list{};
 
-  for (auto& event : eventMap_) {
+  for (auto& event : eventMap_)
+  {
     if (!filter.empty()
-        && (Utility::toString(event.first).find(filter) || event.second->whatAmI().find(filter))) {
+        && (Utility::toString(event.first).find(filter) || event.second->whatAmI().find(filter)))
+    {
       list.append("Event Id: " + Utility::toString(event.first) + '\t'
                   + "Type: " + event.second->whatAmI() + '\n');
     }
@@ -311,7 +328,8 @@ void SimulationBase::logEventMap(LoggingSink::LogSeverity level, std::string_vie
 bool SimulationBase::removeId() const
 {
   auto iterator = std::find(simulations_.cbegin(), simulations_.cend(), id_.value());
-  if (iterator != simulations_.cend()) {
+  if (iterator != simulations_.cend())
+  {
     simulations_.erase(iterator);
     return true;
   }

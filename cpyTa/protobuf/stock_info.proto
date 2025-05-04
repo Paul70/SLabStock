@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package SlabStock.CPyTa.protobuf;
+
+/**
+ * StockInfo represents a structure gathering all values and information
+ * to be exchanged between a C++ application and the 'stockTA' python module.
+ * Description of members:
+ * - symbol: Stock ticker symbol (e.g., "AAPL", "TSLA")
+ * - name: Full name of the company (e.g., "Apple Inc.")
+ * - exchange: Stock exchange where the stock is listed (e.g., "NASDAQ")
+ */
+message StockInfo {
+  string symbol = 1;
+  string name = 2;
+  optional string exchange = 3;
+
+  // Reserved fields for future compatibility
+  reserved 4, 5;
+  reserved "old_field_name";
+}
+
+// Structure containing the technical analysis results
+message TaResult {
+  string priceInfo = 1;
+}
+

@@ -151,6 +151,12 @@
             "company": "Waste Management, Inc.",
             "ta-key": "MW",
             "holdings": false
+        },
+        {
+            "isin": "USY384721251", 
+            "company": "Hyundai Motor Company GDR",
+            "ta-key": "HYU",
+            "holdings": false
         }
     ]
 }

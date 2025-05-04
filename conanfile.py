@@ -1,6 +1,9 @@
+import os
+import shutil
+import subprocess
+import sys
 from conan import ConanFile
 from conan.tools.cmake import CMake, CMakeDeps, CMakeToolchain, cmake_layout
-import sys
 
 required_conan_version = ">=2.0.0"
 
@@ -35,11 +38,33 @@ class SlabstockConanFile(ConanFile):
         self.requires("mariadb-connector-c/3.3.3")
         self.requires("neargye-semver/0.3.0")
         self.requires("zlib/1.2.11")
+        self.requires("pybind11/2.13.6")
+        self.requires("protobuf/5.27.0")
         pass
 
     def build_requirements(self):
         self.tool_requires("cmake/3.27.7")
         self.tool_requires("ninja/1.11.1")
+        pass
+
+    def create_runtime_venv(self):
+        print(os.getcwd())
+
+        #runtime_bin = "./build/Debug/bin" # ist eig conan build_folder
+        runtime_bin = os.path.join(self.build_folder, 'Debug/bin')
+        venv_path = os.path.join(runtime_bin, '.venv')
+        assert os.path.isdir(runtime_bin)
+        
+        if not os.path.isdir(venv_path):
+            subprocess.run(['python3', '-m', 'venv', '.venv'], cwd=runtime_bin, capture_output=False)
+        
+        try:
+            shutil.copy("./requirements.txt", venv_path)
+            pip_path = os.path.join(venv_path, 'bin', 'pip')
+            subprocess.run([pip_path, "install", "-r", "requirements.txt"], capture_output=False)
+        except Exception as e:
+            print(f"Error copying file: {e}")
+            return
         pass
 
     
@@ -57,9 +82,9 @@ class SlabstockConanFile(ConanFile):
     def generate(self):
         deps = CMakeDeps(self)
         deps.generate()
-
         tc = CMakeToolchain(self, generator="Ninja")
         tc.generate()
+        self.create_runtime_venv()
         pass
 
     def build(self):

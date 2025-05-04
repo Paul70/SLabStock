@@ -152,12 +152,15 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
             std::enable_if_t<EventDetail::is_event_v<ConcreteEvent>, bool> = false>
   ConcreteEvent& getEvent(const Event::Id id) const
   {
-    try {
+    try
+    {
       auto& event = eventMap_.at(id);
       return static_cast<ConcreteEvent&>(*event);
       //auto& result = dynamic_cast<ConcreteEvent&>(*event.get());
       //return result;
-    } catch (...) {
+    }
+    catch (...)
+    {
       this->fatal("Rquested event with Id '" + DUTIL::Utility::toString(id)
                   + "' does not exist. Terminating program.");
       D_ASSERT(false);
@@ -178,8 +181,10 @@ class SimulationBase : public DUTIL::ProjectWare, public DUTIL::LoggingSource
   template <typename ConcreteEvent = Event>
   void iterate(std::function<void(ConcreteEvent const& event)> functor)
   {
-    for (auto const& e : eventMap_) {
-      if (e.second->getState() != Event::State::NOT_SCHEDULED) {
+    for (auto const& e : eventMap_)
+    {
+      if (e.second->getState() != Event::State::NOT_SCHEDULED)
+      {
         continue;
       }
       auto const* ce = dynamic_cast<ConcreteEvent const*>(e.second.get());

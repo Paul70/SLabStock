@@ -1,13 +1,27 @@
-# ignored folders
-/extra/knowledge
-/build
-/__pycache__
-/.vscode
-*/__pycache__
-*/.pytest_cache
+# Byte-compiled / cache files
+**/__pycache__/
+*.py[cod]
+*$py.class
+**.pyc
 
-# ignored files
-*.env
+# Virtual environments and env files
+.venv/
+env/
+venv/
+**/.venv*/
+.env
+
+# Distribution / packaging / Cmake / build config 
+build/
+dist/
+*.egg-info/
 *CMakeUserPresets.json
 *CMakeLists.txt.user
 *ProjectUserConfig.json
+
+# VS Code settings
+.vscode/
+
+# other folders
+/extra/knowledge
+

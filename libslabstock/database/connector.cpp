@@ -1,93 +1,149 @@
 #include "connector.h"
-#include "libd/libdutil/constructiondata.h"
-#include "libd/libdutil/constructionvalidator.h"
+#include "sqldriverfactory.h"
 
-#include <iostream>
 #include <mariadb/conncpp.hpp>
 
 using namespace DUTIL;
 using namespace SLABSTOCK::Database;
 
-ConstructionValidator const& DBConnector::getConstructionValidator()
-{
-  using SR = SettingRule;
-  static ConstructionValidator cv(
-      {[]() {
-         SR sr = SR::forNamedParameter<DBConnector::Database_Url>(
-             SR::Usage::MANDATORY_NO_DEFAULT, "Url address of database as string.");
-         return sr;
-       }(),
-       []() {
-         SR sr = SR::forNamedParameter<DBConnector::Database_User>(SR::Usage::MANDATORY_NO_DEFAULT,
-                                                                   "Database user name string.");
-         return sr;
-       }()});
-  return cv;
-}
-
-DBConnector::DBConnector([[maybe_unused]] ConstructionData const& cd,
-                         DUTIL::LoggingSource::LoggingSinkPointer sink) :
+Connector::Connector(std::string_view database_url, std::string_view database_user,
+                     SqlDriverFactory const& sqlDriverFactory,
+                     DUTIL::LoggingSource::LoggingSinkPointer sink) :
     LoggingSource(sink),
-    database_url_(
-        DBConnector::getConstructionValidator().validateNamedParameter<DBConnector::Database_Url>(
-            cd)),
-    database_user_(
-        DBConnector::getConstructionValidator().validateNamedParameter<DBConnector::Database_User>(
-            cd)),
-    connection_(nullptr),
-    statement_(nullptr)
+    database_url_(database_url),
+    database_user_(database_user),
+    sqlDriverFactory_(sqlDriverFactory),
+    connection_(nullptr)
 {
   connect();
 }
 
-DBConnector::~DBConnector()
+Connector::~Connector()
 {
   close();
 }
 
-void DBConnector::connect()
+void Connector::connect()
 {
-  D_ASSERT_MSG("Database connection parameter already set.", !connection_);
-  D_ASSERT_MSG("Database statement parameter already set.", !statement_);
+  D_ASSERT(!connection_);
 
-  try {
+  try
+  {
     // Initialize the driver
-    sql::Driver* driver = sql::mariadb::get_driver_instance();
+    sql::Driver* driver = sqlDriverFactory_.createDriver();
 
     // Connection properties
     sql::SQLString url(database_url_);
     sql::Properties properties({{"user", database_user_}, {"password", password_}});
 
-    // Create a connection, statement and result set - reset because connect method delivers raw pointer.
+    // database connection
     connection_.reset(driver->connect(url, properties));
-    statement_.reset(connection_->createStatement());
-
-    // Execute a query
-    //    std::unique_ptr<sql::ResultSet> res(stmt->executeQuery("SELECT * FROM table_name"));
-
-    //    // Process the results
-    //    while (res->next()) {
-    //      std::cout << "id = " << res->getInt("id") << std::endl;
-    //      std::cout << "name = " << res->getString("name") << std::endl;
-    //    }
-
-  } catch (sql::SQLException& e) {
-    debug("DBConnector: Connection to database '" + database_url_ + "' failed");
-    std::cerr << "SQLException: " << e.what() << std::endl;
-    std::cerr << "SQLState: " << e.getSQLState() << std::endl;
+  }
+  catch (sql::SQLException const& e)
+  {
+    error("DBConnector: Connection to database '" + database_url_ + "' failed: " + e.what());
+  }
+  catch (std::exception const& e)
+  {
+    error("DBConnector: Connection to database '" + database_url_ + "' failed: " + e.what());
+  }
+  catch (...)
+  {
+    error("DBConnector: Connection to database '" + database_url_ + "' failed: Unknown error.");
   }
 
-  debug("DBConnector: Established connection to database '" + database_url_ + "'");
+  D_ASSERT(connection_);
+  trace("DBConnector: Established connection to database '" + database_url_ + "'.");
 }
 
-void DBConnector::close()
+void Connector::close()
 {
-  if (connection_ != nullptr) {
+  if (!connection_)
+  {
+    return;
+  }
+
+  try
+  {
     connection_->close();
-    if (connection_->isClosed()) {
-      debug("Closed connection to '" + database_url_ + "'.");
-    } else {
-      error("Could not close connection to '" + database_url_ + "'.");
-    }
+  }
+  catch (sql::SQLException const& e)
+  {
+    connection_.reset(nullptr);
+    error("DBConnector: Closing connection to database' " + database_url_
+          + "' failed: " + e.what());
+  }
+
+  trace("DBConnector: Closed connection to database' " + database_url_ + "'.");
+}
+
+sql::Connection const& Connector::getConnection() const
+{
+  D_ASSERT(connection_);
+  return *connection_;
+}
+
+Types::SqlStmtResultPair Connector::getTableResultSetAndStatmentHandle(
+    std::string const& sqlStatement) const
+{
+  D_ASSERT(connection_);
+
+  auto stmtHandler = getSqlStatementHandler();
+  D_ASSERT(stmtHandler);
+
+  Types::SqlResultSet resultSet = nullptr;
+
+  try
+  {
+    // execute statement
+    resultSet.reset(stmtHandler->executeQuery(sqlStatement));
+
+    // get metadata
+    std::unique_ptr<sql::ResultSetMetaData> metadata(nullptr);
+    metadata.reset(resultSet->getMetaData());
+  }
+  catch (sql::SQLException const& e)
+  {
+    error("DBConnector: Query of sql statement failed, no result set available: "
+          + std::string(e.what()));
+    return {};
+  }
+  catch (std::exception const& e)
+  {
+    error("DBConnector: Query of sql statement failed, no result set available: "
+          + std::string(e.what()));
+    return {};
+  }
+
+  D_ASSERT(resultSet);
+  D_ASSERT(stmtHandler);
+  return {std::move(resultSet), std::move(stmtHandler)};
+}
+
+Types::SqlTableMetaData Connector::getTableMetaData(Types::SqlResultSetReader resultSet) const
+{
+  std::unique_ptr<sql::ResultSetMetaData> metadata(nullptr);
+  metadata.reset(resultSet.getMetaData());
+  D_ASSERT(metadata);
+  return metadata;
+}
+
+Types::SqlStatementHandle Connector::getSqlStatementHandler() const
+{
+  try
+  {
+    std::unique_ptr<sql::Statement> stmtHandler = nullptr;
+    stmtHandler.reset(connection_->createStatement());
+    return stmtHandler;
+  }
+  catch (sql::SQLException const& e)
+  {
+    error("DBConnector: Creation of sql statement handler failed: " + std::string(e.what()));
+    return {};
+  }
+  catch (std::exception const& e)
+  {
+    error("DBConnector: Creation of sql statement handler failed: " + std::string(e.what()));
+    return {};
   }
 }

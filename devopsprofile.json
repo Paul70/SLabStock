@@ -7,7 +7,7 @@
                 "name": "GCC-13.1.0-Debug-qtcreator",
                 "displayName": "GCC-13.1.0-Debug",
                 "description": "User and platform specific project settings and configuration.",
-                "cmakeExecutable": "/home/paul/.conan2/p/cmake857e6d21f32d2/p/bin/cmake",
+                "cmakeExecutable": null,
                 "inherits": "conan-debug",
                 "cacheVariables": {
                     "CMAKE_CXX_COMPILER": "/opt/gcc-13.1.0-build/bin/g++",
