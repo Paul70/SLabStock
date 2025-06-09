@@ -35,13 +35,6 @@ class InvalidTickerError(YfinanceError):
         super().__init__(symbol, message)
         pass
 
-class InvalidPeriodError(YfinanceError):
-    def __init__(self, symbol, period: str, message=None):
-        if message is None:
-            message = f"The given period {period} is not valid. Valid periods: 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max"
-        super().__init__(symbol, message)
-        pass
-
 
 class CachedLimiterSession(CacheMixin, LimiterMixin, Session):
     pass
@@ -66,7 +59,6 @@ class YfinanceHelper():
         "lname": "longName"
     }
 
-    yf_valid_periods = ['1d','3d','5d','1mo','3mo','6mo','1y','2y','5y','10y','ytd','max']
     yf_user_agent = ["Chrome/133.0.0.0 AppleWebKit/537.36 (KHTML, like Gecko) Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) Safari/537.36"]
 
 

@@ -6,37 +6,72 @@ from datetime import datetime
 
 from ypyTA.stockdata import StockInfo, StockPrice
 
-def test_stockinfo_initialization():
-    stockInfo = StockInfo(symbol="AAPL", in_possess=True)
-    assert stockInfo.symbol == "AAPL"
-    assert stockInfo.in_possess is True
-    assert stockInfo.name is None
-    assert isinstance(stockInfo.time_stamp, datetime)
-    assert isinstance(stockInfo.price_history, pd.Series)
-    assert stockInfo.price_history.empty
+def test_stockprice():
+    ts_now= datetime.now
+    sym = "AAPL"
+    interval = "5d"
+    stockprice = StockPrice(symbol=sym, time_stamp=ts_now, time_interval=interval)
+    assert stockprice.current_price == None
+    assert stockprice.mean_high == None
+    assert stockprice.mean_low == None
+    assert stockprice.time_interval == interval
+    assert stockprice.symbol == sym
+    assert stockprice.time_stamp == ts_now
+    assert isinstance(stockprice.price_history, pd.Series)
+    assert stockprice.price_history.empty
     pass
+
+def test_stock_price_to_dict():
+    now= datetime.now()
+    sym = "AAPL"
+    interval = "5d"
+    stock_price = StockPrice(symbol=sym, time_stamp=now, time_interval=interval)
+
+    default_dict_stock_price = {
+        'symbol': sym,
+        'time_stamp': stock_price.time_stamp.isoformat(),
+        'time_interval': interval, 
+        'price_history': {},
+        'current_price': None,
+        'mean_high': None,
+        'mean_low': None 
+    }
+
+    assert default_dict_stock_price == stock_price.to_dict()
+    pass
+
+def test_stockinfo_initialization():
+    stock_info = StockInfo(symbol="AAPL", in_possess=True)
+    assert stock_info.symbol == "AAPL"
+    assert stock_info.in_possess is True
+    assert stock_info.name is None
+    assert isinstance(stock_info.time_stamp, datetime)
+    assert isinstance(stock_info.price_data, StockPrice)
+    
+    assert stock_info.price_data.symbol == "AAPL"
+    assert stock_info.price_data.time_interval == "5d"
     
     # Check default DataFrame fields
-    assert isinstance(stockInfo.revenue_history, pd.Series)
-    assert stockInfo.revenue_history.empty
-    assert isinstance(stockInfo.gross_profit_history, pd.Series)
-    assert stockInfo.gross_profit_history.empty
-    assert isinstance(stockInfo.ebit_history, pd.Series)
-    assert stockInfo.ebit_history.empty
-    assert isinstance(stockInfo.ebt_history, pd.Series)
-    assert stockInfo.ebt_history.empty
-    assert isinstance(stockInfo.net_income_history, pd.Series)
-    assert stockInfo.net_income_history.empty
-    assert isinstance(stockInfo.opc_history, pd.Series)
-    assert stockInfo.opc_history.empty
-    assert isinstance(stockInfo.capex_history, pd.Series)
-    assert stockInfo.capex_history.empty
-    assert isinstance(stockInfo.total_dept_history, pd.Series)
-    assert stockInfo.total_dept_history.empty
-    assert isinstance(stockInfo.stockholders_equity_history, pd.Series)
-    assert stockInfo.stockholders_equity_history.empty
-    assert isinstance(stockInfo.interest_expense_history, pd.Series)
-    assert stockInfo.interest_expense_history.empty
+    assert isinstance(stock_info.revenue_history, pd.Series)
+    assert stock_info.revenue_history.empty
+    assert isinstance(stock_info.gross_profit_history, pd.Series)
+    assert stock_info.gross_profit_history.empty
+    assert isinstance(stock_info.ebit_history, pd.Series)
+    assert stock_info.ebit_history.empty
+    assert isinstance(stock_info.ebt_history, pd.Series)
+    assert stock_info.ebt_history.empty
+    assert isinstance(stock_info.net_income_history, pd.Series)
+    assert stock_info.net_income_history.empty
+    assert isinstance(stock_info.opc_history, pd.Series)
+    assert stock_info.opc_history.empty
+    assert isinstance(stock_info.capex_history, pd.Series)
+    assert stock_info.capex_history.empty
+    assert isinstance(stock_info.total_dept_history, pd.Series)
+    assert stock_info.total_dept_history.empty
+    assert isinstance(stock_info.stockholders_equity_history, pd.Series)
+    assert stock_info.stockholders_equity_history.empty
+    assert isinstance(stock_info.interest_expense_history, pd.Series)
+    assert stock_info.interest_expense_history.empty
     pass
 
 def test_invalid_symbol():
@@ -49,15 +84,16 @@ def test_invalid_symbol():
     pass
 
 def test_to_dict():
-    stockInfo = StockInfo(symbol="AAPL", in_possess=True)
+    stock_info = StockInfo(symbol="AAPL", in_possess=True)
+    stock_price_dict = stock_info.price_data.to_dict()
 
     default_dict = {
         'symbol': 'AAPL', 
         'in_possess': True, 
         'name': None, 
-        'time_stamp': stockInfo.time_stamp.isoformat(), 
-        'last_price': None, 
-        'price_history': {}, 
+        'time_stamp': stock_info.time_stamp.isoformat(),
+        'time_interval': "5d", 
+        'price_data': stock_price_dict, 
         'revenue_history': {}, 
         'gross_profit_history': {}, 
         'ebit_history': {}, 
@@ -70,21 +106,10 @@ def test_to_dict():
         'interest_expense_history': {}
     }
     
-    assert default_dict == stockInfo.to_dict()
+    assert default_dict == stock_info.to_dict()
     pass
 
-def test_stockprice():
-    stockprice = StockPrice()
-    assert stockprice.company == None
-    assert stockprice.current_price == None
-    assert stockprice.mean_high == None
-    assert stockprice.mean_low == None
-    assert stockprice.period == None
-    assert stockprice.symbol == None
-    assert stockprice.time_stamp == None
-    pass
-
-
+    
 
 if __name__ == "__main__":
     pytest.main()
